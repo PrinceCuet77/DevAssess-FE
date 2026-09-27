@@ -22,12 +22,27 @@ export const metadata: Metadata = {
     'It is a platform where a evaluators publish paid technical assessments, developers buy them, take them, and review them, and admins oversee the whole marketplace.',
 };
 
+const themeInitScript = `
+(function () {
+  try {
+    var stored = localStorage.getItem('devassess-theme');
+    var theme = stored === 'light' ? 'light' : 'dark';
+    document.documentElement.classList.remove('light', 'dark');
+    document.documentElement.classList.add(theme);
+  } catch (e) {
+    document.documentElement.classList.add('dark');
+  }
+})();
+`;
+
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html
       lang='en'
+      suppressHydrationWarning
       className={cn(
         'h-full',
+        'dark',
         'antialiased',
         geistSans.variable,
         geistMono.variable,
@@ -35,8 +50,13 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         inter.variable,
       )}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <Providers>
-        <body className='min-h-full flex flex-col'>{children}</body>
+        <body className='min-h-full flex flex-col' suppressHydrationWarning>
+          {children}
+        </body>
       </Providers>
     </html>
   );

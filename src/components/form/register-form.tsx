@@ -1,38 +1,50 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { useForm } from '@tanstack/react-form';
 import { z } from 'zod';
 import { Eye, EyeOff, Loader2, Lock, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 import GoogleIcon from '@/components/form/google-icon';
 import FieldError from '@/components/form/field-error';
 
-const loginSchema = z.object({
+const registerSchema = z.object({
   email: z.email('Enter a valid email address'),
-  password: z.string().min(1, 'Password is required'),
-  remember: z.boolean(),
+  role: z.enum(['developer', 'evaluator']),
+  password: z.string().min(8, 'Use at least 8 characters'),
 });
 
-const LoginForm = () => {
+const ROLES = [
+  {
+    value: 'developer',
+    title: 'Developer',
+    description: 'Buy & take assessments',
+  },
+  {
+    value: 'evaluator',
+    title: 'Evaluator',
+    description: 'Publish & sell assessments',
+  },
+] as const;
+
+const RegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm({
     defaultValues: {
       email: '',
+      role: 'developer' as 'developer' | 'evaluator',
       password: '',
-      remember: true,
     },
     validators: {
-      onChange: loginSchema,
+      onChange: registerSchema,
     },
     onSubmit: async ({ value }) => {
-      // TODO: replace with a TanStack Query mutation calling POST /auth/login via apiClient.
-      console.log('login submit', value);
+      // TODO: replace with a TanStack Query mutation calling POST /auth/register via apiClient.
+      console.log('register submit', value);
     },
   });
 
@@ -45,6 +57,37 @@ const LoginForm = () => {
         form.handleSubmit();
       }}
     >
+      <form.Field name='role'>
+        {(field) => (
+          <div className='flex flex-col gap-1.5'>
+            <Label>I want to</Label>
+            <div role='radiogroup' className='grid grid-cols-2 gap-2'>
+              {ROLES.map((role) => {
+                const isActive = field.state.value === role.value;
+                return (
+                  <button
+                    key={role.value}
+                    type='button'
+                    role='radio'
+                    aria-checked={isActive}
+                    onClick={() => field.handleChange(role.value)}
+                    className={cn(
+                      'rounded-lg border px-3 py-2.5 text-left transition-colors',
+                      isActive
+                        ? 'border-primary bg-primary/5 ring-1 ring-primary'
+                        : 'border-input hover:bg-muted',
+                    )}
+                  >
+                    <p className='text-sm font-medium'>{role.title}</p>
+                    <p className='text-xs text-muted-foreground'>{role.description}</p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </form.Field>
+
       <form.Field name='email'>
         {(field) => (
           <div className='flex flex-col gap-1.5'>
@@ -72,22 +115,14 @@ const LoginForm = () => {
       <form.Field name='password'>
         {(field) => (
           <div className='flex flex-col gap-1.5'>
-            <div className='flex items-center justify-between'>
-              <Label htmlFor={field.name}>Password</Label>
-              <Link
-                href='/forgot-password'
-                className='text-xs font-medium text-primary hover:underline'
-              >
-                Forgot password?
-              </Link>
-            </div>
+            <Label htmlFor={field.name}>Password</Label>
             <div className='relative'>
               <Lock className='pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground' />
               <Input
                 id={field.name}
                 name={field.name}
                 type={showPassword ? 'text' : 'password'}
-                autoComplete='current-password'
+                autoComplete='new-password'
                 placeholder='••••••••'
                 value={field.state.value}
                 aria-invalid={field.state.meta.isTouched && !field.state.meta.isValid}
@@ -109,18 +144,6 @@ const LoginForm = () => {
         )}
       </form.Field>
 
-      <form.Field name='remember'>
-        {(field) => (
-          <label className='flex w-fit items-center gap-2 text-sm text-muted-foreground select-none'>
-            <Checkbox
-              checked={field.state.value}
-              onCheckedChange={(checked) => field.handleChange(checked)}
-            />
-            Remember me
-          </label>
-        )}
-      </form.Field>
-
       <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting] as const}>
         {([canSubmit, isSubmitting]) => (
           <Button
@@ -132,10 +155,10 @@ const LoginForm = () => {
             {isSubmitting ? (
               <>
                 <Loader2 className='size-4 animate-spin' />
-                Signing in…
+                Creating account…
               </>
             ) : (
-              'Sign in'
+              'Create account'
             )}
           </Button>
         )}
@@ -151,20 +174,8 @@ const LoginForm = () => {
         <GoogleIcon className='size-4' />
         Continue with Google
       </Button>
-
-      <p className='text-center text-xs text-muted-foreground'>
-        By continuing, you agree to DevAssess&apos;s{' '}
-        <Link href='/terms' className='font-medium text-foreground hover:underline'>
-          Terms of Service
-        </Link>{' '}
-        and{' '}
-        <Link href='/privacy' className='font-medium text-foreground hover:underline'>
-          Privacy Policy
-        </Link>
-        .
-      </p>
     </form>
   );
 };
 
-export default LoginForm;
+export default RegisterForm;

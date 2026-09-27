@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { ClipboardCheck, Rocket, ShieldCheck } from 'lucide-react';
 
 const features = [
@@ -19,7 +18,15 @@ const features = [
   },
 ];
 
-const AuthBrandPanel = () => {
+type AuthBrandPanelProps = {
+  title?: string;
+  description?: string;
+};
+
+const AuthBrandPanel = ({
+  title = 'Where verified skill gets you hired.',
+  description = 'A marketplace where evaluators publish paid technical assessments and developers prove their skills by taking them.',
+}: AuthBrandPanelProps) => {
   return (
     <div className='relative hidden overflow-hidden bg-primary lg:flex lg:flex-col lg:justify-between lg:px-12 lg:py-12'>
       <div aria-hidden className='pointer-events-none absolute inset-0'>
@@ -28,19 +35,12 @@ const AuthBrandPanel = () => {
         <div className='absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,var(--color-primary-foreground)_1px,transparent_0)] bg-size-[24px_24px] opacity-[0.06]' />
       </div>
 
-      <Link href='/' className='relative z-10 font-heading text-xl font-semibold text-primary-foreground'>
-        DevAssess
-      </Link>
-
       <div className='relative z-10 max-w-md space-y-10'>
         <div className='space-y-3'>
           <h2 className='text-3xl font-heading font-semibold text-balance text-primary-foreground'>
-            Where verified skill gets you hired.
+            {title}
           </h2>
-          <p className='text-balance text-primary-foreground/80'>
-            A marketplace where evaluators publish paid technical assessments and developers prove their
-            skills by taking them.
-          </p>
+          <p className='text-balance text-primary-foreground/80'>{description}</p>
         </div>
 
         <ul className='space-y-6'>
