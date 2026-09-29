@@ -14,7 +14,7 @@ const features = [
   {
     icon: ShieldCheck,
     title: 'Fair, rubric-based scoring',
-    description: 'Every attempt is measured against a clear rubric — objective signal, not guesswork.',
+    description: 'Every attempt is measured against a clear rubric - objective signal, not guesswork.',
   },
 ];
 

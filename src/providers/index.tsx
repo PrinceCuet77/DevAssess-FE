@@ -3,11 +3,14 @@
 import { ReactNode } from 'react';
 import QueryProvider from './query.provider';
 import ThemeProvider from './theme.provider';
+import GoogleAuthProvider from './google-auth.provider';
 
 export default function Providers({ children }: { children: ReactNode }) {
   return (
-    <ThemeProvider>
-      <QueryProvider>{children}</QueryProvider>
-    </ThemeProvider>
+    <GoogleAuthProvider>
+      <ThemeProvider>
+        <QueryProvider>{children}</QueryProvider>
+      </ThemeProvider>
+    </GoogleAuthProvider>
   );
 }

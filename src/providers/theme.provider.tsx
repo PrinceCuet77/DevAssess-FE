@@ -29,7 +29,7 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
     try {
       localStorage.setItem(STORAGE_KEY, next);
     } catch {
-      // localStorage may be unavailable (e.g. private browsing) — theme just won't persist.
+      // localStorage may be unavailable (e.g. private browsing) - theme just won't persist.
     }
   }, []);
 

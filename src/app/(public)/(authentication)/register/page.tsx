@@ -3,7 +3,7 @@ import AuthBrandPanel from '@/components/modules/auth/brand-panel';
 import RegisterForm from '@/components/form/register-form';
 
 export const metadata: Metadata = {
-  title: 'Create an account — DevAssess',
+  title: 'Create an account - DevAssess',
   description: 'Join DevAssess to buy and take assessments, or publish assessments as an evaluator.',
 };
 

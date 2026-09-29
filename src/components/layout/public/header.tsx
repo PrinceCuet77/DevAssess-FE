@@ -6,7 +6,9 @@ import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import ThemeToggle from '@/components/shared/theme-toggle';
+import UserNav from '@/components/shared/user-nav';
 import { cn } from '@/lib/utils';
+import { useGetMyProfile } from '@/hooks';
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
@@ -16,11 +18,15 @@ const NAV_LINKS = [
 const Header = () => {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { data: user } = useGetMyProfile();
 
   return (
     <header className='sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
       <div className='mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8'>
-        <Link href='/' className='font-heading text-lg font-semibold tracking-tight'>
+        <Link
+          href='/'
+          className='font-heading text-lg font-semibold tracking-tight'
+        >
           DevAssess
         </Link>
 
@@ -33,7 +39,9 @@ const Header = () => {
                 href={link.href}
                 className={cn(
                   'rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                  isActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
+                  isActive
+                    ? 'text-foreground'
+                    : 'text-muted-foreground hover:text-foreground',
                 )}
               >
                 {link.label}
@@ -44,12 +52,7 @@ const Header = () => {
 
         <div className='hidden items-center gap-2 md:flex'>
           <ThemeToggle />
-          <Link href='/login' className={buttonVariants({ variant: 'ghost', size: 'lg' })}>
-            Sign in
-          </Link>
-          <Link href='/register' className={buttonVariants({ size: 'lg' })}>
-            Get started
-          </Link>
+          <UserNav />
         </div>
 
         <div className='flex items-center gap-2 md:hidden'>
@@ -62,7 +65,11 @@ const Header = () => {
             aria-expanded={isMenuOpen}
             onClick={() => setIsMenuOpen((value) => !value)}
           >
-            {isMenuOpen ? <X className='size-5' /> : <Menu className='size-5' />}
+            {isMenuOpen ? (
+              <X className='size-5' />
+            ) : (
+              <Menu className='size-5' />
+            )}
           </Button>
         </div>
       </div>
@@ -79,7 +86,9 @@ const Header = () => {
                   onClick={() => setIsMenuOpen(false)}
                   className={cn(
                     'rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                    isActive ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground',
+                    isActive
+                      ? 'bg-muted text-foreground'
+                      : 'text-muted-foreground hover:text-foreground',
                   )}
                 >
                   {link.label}
@@ -89,20 +98,17 @@ const Header = () => {
           </nav>
 
           <div className='mt-4 flex flex-col gap-2 border-t border-border/60 pt-4'>
-            <Link
-              href='/login'
-              onClick={() => setIsMenuOpen(false)}
-              className={buttonVariants({ variant: 'outline', size: 'lg' })}
-            >
-              Sign in
-            </Link>
-            <Link
-              href='/register'
-              onClick={() => setIsMenuOpen(false)}
-              className={buttonVariants({ size: 'lg' })}
-            >
-              Get started
-            </Link>
+            {user ? (
+              <UserNav />
+            ) : (
+              <Link
+                href='/login'
+                onClick={() => setIsMenuOpen(false)}
+                className={buttonVariants({ variant: 'outline', size: 'lg' })}
+              >
+                Sign in
+              </Link>
+            )}
           </div>
         </div>
       )}
