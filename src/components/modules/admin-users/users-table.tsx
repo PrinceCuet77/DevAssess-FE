@@ -52,7 +52,7 @@ const UsersTable = ({ users }: { users: AdminUserRow[] }) => (
             >
               <td className='px-4 py-3'>
                 <Link
-                  href={`/admin/users/${user.id}`}
+                  href={`/admin/users/detail?id=${user.id}`}
                   className='flex items-center gap-3'
                 >
                   <UserAvatar {...user} />

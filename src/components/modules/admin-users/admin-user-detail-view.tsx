@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { FetchError } from 'ofetch';
 import UserAvatar from '@/components/modules/admin-users/user-avatar';
@@ -56,14 +57,13 @@ const AdminUserDetailView = ({ userId }: { userId: string }) => {
   if (isPending) return <Skeletons />;
 
   if (!user) {
-    const notFound =
-      error instanceof FetchError && (error.status === 404 || error.status === 400);
+    if (error instanceof FetchError && (error.status === 404 || error.status === 400)) notFound();
     return (
       <>
         {back}
         <Card>
           <CardContent className='py-6 text-center text-sm text-muted-foreground'>
-            {notFound ? 'This user could not be found.' : "We couldn't load this user."}
+            We couldn&apos;t load this user.
           </CardContent>
         </Card>
       </>
