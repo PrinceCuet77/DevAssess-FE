@@ -1,12 +1,29 @@
+'use client';
+
+import DashboardSkeleton from '@/components/modules/developer-dashboard/dashboard-skeleton';
 import PendingBanner from '@/components/modules/developer-dashboard/pending-banner';
 import RecentAttempts from '@/components/modules/developer-dashboard/recent-attempts';
 import RecentPurchases from '@/components/modules/developer-dashboard/recent-purchases';
 import StatsGrid from '@/components/modules/developer-dashboard/stats-grid';
-import { DEVELOPER_DASHBOARD_MOCK } from '@/components/modules/developer-dashboard/dashboard-mock';
+import { Card, CardContent } from '@/components/ui/card';
+import { useGetDeveloperDashboard } from '@/hooks';
 
-// TODO: swap the mock for the GET /developer/dashboard query.
 const DeveloperDashboardView = () => {
-  const { stats, recentAttempts, recentPurchases } = DEVELOPER_DASHBOARD_MOCK;
+  const { data, isPending, isError } = useGetDeveloperDashboard();
+
+  if (isPending) return <DashboardSkeleton />;
+
+  if (isError || !data) {
+    return (
+      <Card>
+        <CardContent className='py-6 text-center text-sm text-muted-foreground'>
+          We couldn&apos;t load your dashboard. Please refresh and try again.
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const { stats, recentAttempts, recentPurchases } = data;
 
   return (
     <div className='flex flex-col gap-6'>
