@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Trash2, TriangleAlert } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { Loader2, Trash2, TriangleAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -15,17 +17,32 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useDeleteAccount } from '@/hooks';
+import { getApiErrorMessage } from '@/lib/errors';
 
 const CONFIRM_WORD = 'DELETE';
 
 const DeleteAccountDialog = () => {
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState('');
+  const router = useRouter();
+  const { mutate: deleteAccount, isPending } = useDeleteAccount();
+
+  const handleDelete = () => {
+    deleteAccount(undefined, {
+      onSuccess: () => {
+        toast.success('Your account has been deleted.');
+        router.replace('/');
+      },
+      onError: (error) => toast.error(getApiErrorMessage(error, 'Could not delete account.')),
+    });
+  };
 
   return (
     <Dialog
       open={open}
       onOpenChange={(next) => {
+        if (isPending) return;
         setOpen(next);
         if (!next) setConfirmText('');
       }}
@@ -59,7 +76,12 @@ const DeleteAccountDialog = () => {
         </div>
         <DialogFooter>
           <DialogClose render={<Button variant='outline' />}>Cancel</DialogClose>
-          <Button variant='destructive' disabled={confirmText !== CONFIRM_WORD}>
+          <Button
+            variant='destructive'
+            disabled={confirmText !== CONFIRM_WORD || isPending}
+            onClick={handleDelete}
+          >
+            {isPending && <Loader2 className='animate-spin' />}
             Delete my account
           </Button>
         </DialogFooter>

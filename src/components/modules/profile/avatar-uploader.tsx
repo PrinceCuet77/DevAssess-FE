@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { Camera, Trash2 } from 'lucide-react';
+import { useRef } from 'react';
+import { Camera, Loader2, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { useRemoveAvatar, useUploadAvatar } from '@/hooks';
+import { getApiErrorMessage } from '@/lib/errors';
 import { AVATAR_ACCEPTED_TYPES, AVATAR_MAX_SIZE } from '@/validation/user.validation';
 
 interface AvatarUploaderProps {
@@ -16,16 +18,10 @@ const getInitials = (value: string) => value.trim().slice(0, 2).toUpperCase() ||
 
 const AvatarUploader = ({ name, avatarUrl }: AvatarUploaderProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-  const [removed, setRemoved] = useState(false);
-
-  useEffect(() => {
-    return () => {
-      if (preview) URL.revokeObjectURL(preview);
-    };
-  }, [preview]);
-
-  const currentSrc = preview ?? (removed ? null : avatarUrl);
+  const { mutate: upload, isPending: uploading } = useUploadAvatar();
+  const { mutate: remove, isPending: removing } = useRemoveAvatar();
+  const busy = uploading || removing;
+  const currentSrc = avatarUrl;
 
   const handleFile = (file?: File) => {
     if (!file) return;
@@ -37,8 +33,10 @@ const AvatarUploader = ({ name, avatarUrl }: AvatarUploaderProps) => {
       toast.error('Image must be 5 MB or smaller.');
       return;
     }
-    setPreview(URL.createObjectURL(file));
-    setRemoved(false);
+    upload(file, {
+      onSuccess: () => toast.success('Profile photo updated.'),
+      onError: (error) => toast.error(getApiErrorMessage(error, 'Could not upload photo. Please try again.')),
+    });
   };
 
   return (
@@ -60,8 +58,8 @@ const AvatarUploader = ({ name, avatarUrl }: AvatarUploaderProps) => {
               event.target.value = '';
             }}
           />
-          <Button type='button' variant='outline' onClick={() => inputRef.current?.click()}>
-            <Camera />
+          <Button type='button' variant='outline' disabled={busy} onClick={() => inputRef.current?.click()}>
+            {uploading ? <Loader2 className='animate-spin' /> : <Camera />}
             Change photo
           </Button>
           {currentSrc && (
@@ -69,12 +67,15 @@ const AvatarUploader = ({ name, avatarUrl }: AvatarUploaderProps) => {
               type='button'
               variant='ghost'
               className='text-destructive hover:text-destructive'
-              onClick={() => {
-                setPreview(null);
-                setRemoved(true);
-              }}
+              disabled={busy}
+              onClick={() =>
+                remove(undefined, {
+                  onSuccess: () => toast.success('Profile photo removed.'),
+                  onError: (error) => toast.error(getApiErrorMessage(error, 'Could not remove photo.')),
+                })
+              }
             >
-              <Trash2 />
+              {removing ? <Loader2 className='animate-spin' /> : <Trash2 />}
               Remove
             </Button>
           )}

@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { useForm } from '@tanstack/react-form';
 import { Loader2, Lock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -11,8 +13,10 @@ import { Textarea } from '@/components/ui/textarea';
 import FieldError from '@/components/form/field-error';
 import AvatarUploader from '@/components/modules/profile/avatar-uploader';
 import SkillsInput from '@/components/modules/profile/skills-input';
+import { useUpdateProfile } from '@/hooks';
+import { getApiErrorMessage, parseFieldErrors } from '@/lib/errors';
 import { MAX_BIO_LENGTH, updateProfileSchema } from '@/validation/user.validation';
-import type { User, UserStatus } from '@/types/user.types';
+import type { UpdateProfilePayload, User, UserStatus } from '@/types/user.types';
 
 const STATUS_BADGE: Record<UserStatus, { label: string; variant: 'success' | 'warning' | 'destructive' }> = {
   VERIFIED: { label: 'Verified', variant: 'success' },
@@ -24,6 +28,9 @@ const STATUS_BADGE: Record<UserStatus, { label: string; variant: 'success' | 'wa
 const ProfileForm = ({ user }: { user: User }) => {
   const displayName = user.name ?? user.email.split('@')[0];
 
+  const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
+  const { mutateAsync: updateProfile } = useUpdateProfile();
+
   const form = useForm({
     defaultValues: {
       name: user.name ?? '',
@@ -34,10 +41,58 @@ const ProfileForm = ({ user }: { user: User }) => {
       skills: user.skills,
     },
     validators: { onChange: updateProfileSchema },
-    onSubmit: () => {
-      // API integration pending
+    onSubmit: async ({ value }) => {
+      const parsed = updateProfileSchema.parse(value);
+      const initial = {
+        name: user.name ?? '',
+        profession: user.profession ?? '',
+        company: user.company ?? '',
+        experience: user.experience,
+        bio: user.bio ?? '',
+        skills: user.skills,
+      };
+      // Only send what changed; skills replace the whole array so compare by content.
+      const payload: UpdateProfilePayload = {};
+      for (const key of Object.keys(parsed) as (keyof typeof parsed)[]) {
+        if (JSON.stringify(parsed[key]) !== JSON.stringify(initial[key])) {
+          Object.assign(payload, { [key]: parsed[key] });
+        }
+      }
+      setServerErrors({});
+      if (Object.keys(payload).length === 0) return;
+
+      try {
+        const response = await updateProfile(payload);
+        const saved = response.data;
+        form.reset({
+          name: saved.name ?? '',
+          profession: saved.profession ?? '',
+          company: saved.company ?? '',
+          experience: saved.experience,
+          bio: saved.bio ?? '',
+          skills: saved.skills,
+        });
+        toast.success('Profile updated.');
+      } catch (error) {
+        const fieldErrors = parseFieldErrors(error);
+        const names = Object.keys(fieldErrors);
+        if (names.length) {
+          setServerErrors(fieldErrors);
+        } else {
+          toast.error(getApiErrorMessage(error, 'Could not update profile. Please try again.'));
+        }
+      }
     },
   });
+
+  // Warn before closing/reloading the tab with unsaved changes.
+  useEffect(() => {
+    const handler = (event: BeforeUnloadEvent) => {
+      if (form.state.isDirty) event.preventDefault();
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [form]);
 
   const status = STATUS_BADGE[user.status];
 
@@ -104,7 +159,7 @@ const ProfileForm = ({ user }: { user: User }) => {
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
                 />
-                {field.state.meta.isTouched && <FieldError errors={field.state.meta.errors} />}
+                <FieldError errors={[...(field.state.meta.isTouched ? field.state.meta.errors : []), serverErrors[field.name]]} />
               </div>
             )}
           </form.Field>
@@ -122,7 +177,7 @@ const ProfileForm = ({ user }: { user: User }) => {
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
                 />
-                {field.state.meta.isTouched && <FieldError errors={field.state.meta.errors} />}
+                <FieldError errors={[...(field.state.meta.isTouched ? field.state.meta.errors : []), serverErrors[field.name]]} />
               </div>
             )}
           </form.Field>
@@ -141,7 +196,7 @@ const ProfileForm = ({ user }: { user: User }) => {
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
                 />
-                {field.state.meta.isTouched && <FieldError errors={field.state.meta.errors} />}
+                <FieldError errors={[...(field.state.meta.isTouched ? field.state.meta.errors : []), serverErrors[field.name]]} />
               </div>
             )}
           </form.Field>
@@ -163,7 +218,7 @@ const ProfileForm = ({ user }: { user: User }) => {
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.valueAsNumber)}
                 />
-                {field.state.meta.isTouched && <FieldError errors={field.state.meta.errors} />}
+                <FieldError errors={[...(field.state.meta.isTouched ? field.state.meta.errors : []), serverErrors[field.name]]} />
               </div>
             )}
           </form.Field>
@@ -182,7 +237,7 @@ const ProfileForm = ({ user }: { user: User }) => {
                   onChange={(event) => field.handleChange(event.target.value)}
                 />
                 <div className='flex items-start justify-between gap-2'>
-                  <div>{field.state.meta.isTouched && <FieldError errors={field.state.meta.errors} />}</div>
+                  <div><FieldError errors={[...(field.state.meta.isTouched ? field.state.meta.errors : []), serverErrors[field.name]]} /></div>
                   <p className='text-xs text-muted-foreground' aria-live='polite'>
                     {field.state.value.length}/{MAX_BIO_LENGTH}
                   </p>
@@ -196,7 +251,7 @@ const ProfileForm = ({ user }: { user: User }) => {
               <div className='flex flex-col gap-1.5 sm:col-span-2'>
                 <Label htmlFor='skills'>Skills</Label>
                 <SkillsInput id='skills' value={field.state.value} onChange={field.handleChange} />
-                {field.state.meta.isTouched && <FieldError errors={field.state.meta.errors} />}
+                <FieldError errors={[...(field.state.meta.isTouched ? field.state.meta.errors : []), serverErrors[field.name]]} />
               </div>
             )}
           </form.Field>
