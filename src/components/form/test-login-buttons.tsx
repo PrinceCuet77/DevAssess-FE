@@ -4,7 +4,6 @@ import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { useTestLogin } from '@/hooks';
-import { IS_TEST_LOGIN_ENABLED } from '@/constants/test-credentials';
 import { getApiErrorMessage } from '@/lib/errors';
 import type { Role } from '@/types/user.types';
 
@@ -14,11 +13,8 @@ const TEST_LOGINS: { role: Role; label: string }[] = [
   { role: 'ADMIN', label: 'Test Admin login' },
 ];
 
-// Dev/staging shortcut: credentials are resolved server-side and the action refuses to run in production.
 const TestLoginButtons = () => {
   const { mutate: testLogin, isPending, variables } = useTestLogin();
-
-  if (!IS_TEST_LOGIN_ENABLED) return null;
 
   const handleClick = (role: Role) => {
     testLogin(role, {
