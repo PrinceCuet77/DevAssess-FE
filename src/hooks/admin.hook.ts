@@ -1,4 +1,5 @@
 import {
+  getAdminAssessment,
   getAdminAssessments,
   getAdminDashboard,
   getAdminUser,
@@ -60,5 +61,31 @@ export const useUpdateAdminUserStatus = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-user'] });
       queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
     },
+  });
+};
+
+export const useGetAdminAssessment = (assessmentId: string) => {
+  return useQuery({
+    queryKey: ['admin-assessment', assessmentId],
+    queryFn: () => getAdminAssessment(assessmentId),
+    select: (response) => response.data,
+    retry: false,
+  });
+};
+
+// There's no `GET /admin/assessments/:id`, and the public detail 404s for non-published assessments,
+// so find the row by scanning the admin list (which includes every status).
+export const useGetAdminAssessmentRow = (assessmentId: string) => {
+  return useQuery({
+    queryKey: ['admin-assessments', 'row', assessmentId],
+    queryFn: async () => {
+      for (let page = 1; ; page++) {
+        const { data, meta } = await getAdminAssessments({ page, limit: 100 });
+        const row = data.find((r) => r.id === assessmentId);
+        if (row) return row;
+        if (!meta || page >= meta.totalPages) return null;
+      }
+    },
+    retry: false,
   });
 };

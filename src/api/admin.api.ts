@@ -1,5 +1,5 @@
 import apiClient from '@/lib/apiClient';
-import type { AdminAssessmentRow, AdminAssessmentsQuery } from '@/types/admin-assessments.types';
+import type { AdminAssessmentDetail, AdminAssessmentRow, AdminAssessmentsQuery } from '@/types/admin-assessments.types';
 import type { AdminDashboardData } from '@/types/admin-dashboard.types';
 import type { AdminSettableStatus, AdminUserDetail, AdminUserRow, AdminUsersQuery } from '@/types/admin-users.types';
 import type { ApiResponse } from '@/types/api.types';
@@ -29,4 +29,8 @@ export const updateAdminUserStatus = ({ userId, status }: { userId: string; stat
 
 export const getAdminAssessments = (query: AdminAssessmentsQuery) => {
   return apiClient<ApiResponse<AdminAssessmentRow[]>>('/admin/assessments', { query: compact(query) });
+};
+
+export const getAdminAssessment = (assessmentId: string) => {
+  return apiClient<ApiResponse<AdminAssessmentDetail>>(`/assessments/${assessmentId}`);
 };

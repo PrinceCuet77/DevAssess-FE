@@ -2,7 +2,14 @@
 
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, ShieldAlert } from 'lucide-react';
+import {
+  ArrowLeft,
+  ClipboardList,
+  Receipt,
+  ShieldAlert,
+  Star,
+  type LucideIcon,
+} from 'lucide-react';
 import { FetchError } from 'ofetch';
 import UserAvatar from '@/components/modules/admin-users/user-avatar';
 import {
@@ -21,11 +28,16 @@ const PROVIDER_LABEL = {
   GOOGLE: 'Google',
 } as const;
 
-const Stat = ({ label, value }: { label: string; value: number }) => (
+const Stat = ({ label, value, icon: Icon }: { label: string; value: number; icon: LucideIcon }) => (
   <Card size='sm'>
-    <CardContent>
-      <p className='text-xs text-muted-foreground'>{label}</p>
-      <p className='font-heading text-2xl font-semibold'>{value}</p>
+    <CardContent className='flex items-center justify-between gap-3'>
+      <div>
+        <p className='text-xs text-muted-foreground'>{label}</p>
+        <p className='font-heading text-2xl font-semibold tabular-nums'>{value}</p>
+      </div>
+      <span className='flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+        <Icon className='size-4' />
+      </span>
     </CardContent>
   </Card>
 );
@@ -33,12 +45,12 @@ const Stat = ({ label, value }: { label: string; value: number }) => (
 const statsFor = (user: AdminUserDetail) => {
   const c = user._count;
   if (user.role === 'EVALUATOR')
-    return [{ label: 'Assessments created', value: c.assessments }];
+    return [{ label: 'Assessments created', value: c.assessments, icon: ClipboardList }];
   if (user.role === 'DEVELOPER')
     return [
-      { label: 'Orders', value: c.purchaseAssessments },
-      { label: 'Attempts', value: c.attempts },
-      { label: 'Reviews', value: c.reviews },
+      { label: 'Orders', value: c.purchaseAssessments, icon: Receipt },
+      { label: 'Attempts', value: c.attempts, icon: ClipboardList },
+      { label: 'Reviews', value: c.reviews, icon: Star },
     ];
   return [];
 };
@@ -102,9 +114,10 @@ const AdminUserDetailView = ({ userId }: { userId: string }) => {
             </p>
           </div>
         )}
-        <Card>
-          <CardContent className='flex flex-col gap-4 sm:flex-row sm:items-center'>
-            <UserAvatar {...user} className='size-16' />
+        <Card className='overflow-hidden pt-0'>
+          <div className='h-24 bg-gradient-to-r from-violet-500/30 via-fuchsia-500/20 to-sky-500/30' />
+          <CardContent className='-mt-12 flex flex-col gap-4 sm:flex-row sm:items-end'>
+            <UserAvatar {...user} className='size-24 text-2xl ring-4' />
             <div className='min-w-0 flex-1 space-y-2'>
               <div>
                 <h2 className='truncate font-heading text-xl font-semibold'>

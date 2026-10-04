@@ -2,13 +2,20 @@
 
 import { useEffect, useState } from 'react';
 import { Search } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import type { AdminDashboardStats } from '@/types/admin-dashboard.types';
 import { Input } from '@/components/ui/input';
 import type { AdminUsersQuery } from '@/types/admin-users.types';
 
 const SELECT_CLASS =
   'h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30 dark:[&>option]:bg-background';
 
-const ROLES = ['DEVELOPER', 'EVALUATOR', 'ADMIN'] as const;
+const TABS = [
+  { value: undefined, label: 'All' },
+  { value: 'DEVELOPER', label: 'Developers' },
+  { value: 'EVALUATOR', label: 'Evaluators' },
+  { value: 'ADMIN', label: 'Admins' },
+] as const;
 const STATUSES = ['VERIFIED', 'NOT_VERIFIED', 'SUSPENDED', 'DELETED'] as const;
 const SORTS = [
   { value: 'createdAt:desc', label: 'Newest first' },
@@ -24,9 +31,10 @@ const pretty = (v: string) => v.charAt(0) + v.slice(1).toLowerCase().replaceAll(
 type IProps = {
   query: AdminUsersQuery;
   onChange: (patch: Partial<AdminUsersQuery>) => void;
+  counts?: AdminDashboardStats;
 };
 
-const UsersFilters = ({ query, onChange }: IProps) => {
+const UsersFilters = ({ query, onChange, counts }: IProps) => {
   const [search, setSearch] = useState(query.search ?? '');
   const [prevSearch, setPrevSearch] = useState(query.search);
 
@@ -45,7 +53,39 @@ const UsersFilters = ({ query, onChange }: IProps) => {
   }, [search, query.search, onChange]);
 
   return (
-    <div className='flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center'>
+    <div className='flex flex-col gap-3'>
+      <div
+        role='tablist'
+        aria-label='User role'
+        className='flex gap-1 overflow-x-auto overflow-y-hidden shadow-[inset_0_-1px_0_var(--border)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+      >
+        {TABS.map((tab) => {
+          const active = query.role === tab.value;
+          const count =
+            counts && (tab.value ? (counts.usersByRole[tab.value] ?? 0) : counts.totalUsers);
+          return (
+            <button
+              key={tab.label}
+              type='button'
+              role='tab'
+              aria-selected={active}
+              onClick={() => onChange({ role: tab.value })}
+              className={cn(
+                'inline-flex items-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium whitespace-nowrap outline-none focus-visible:ring-3 focus-visible:ring-ring/50',
+                active
+                  ? 'border-primary text-foreground'
+                  : 'border-transparent text-muted-foreground hover:text-foreground',
+              )}
+            >
+              {tab.label}
+              {count !== undefined && (
+                <span className='rounded-full bg-muted px-1.5 text-xs tabular-nums'>{count}</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+      <div className='flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center'>
       <div className='relative sm:w-72'>
         <Search className='pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground' />
         <Input
@@ -56,19 +96,6 @@ const UsersFilters = ({ query, onChange }: IProps) => {
           className='pl-8'
         />
       </div>
-      <select
-        aria-label='Filter by role'
-        className={SELECT_CLASS}
-        value={query.role ?? ''}
-        onChange={(e) => onChange({ role: (e.target.value || undefined) as AdminUsersQuery['role'] })}
-      >
-        <option value=''>All roles</option>
-        {ROLES.map((r) => (
-          <option key={r} value={r}>
-            {pretty(r)}
-          </option>
-        ))}
-      </select>
       <select
         aria-label='Filter by status'
         className={SELECT_CLASS}
@@ -102,6 +129,7 @@ const UsersFilters = ({ query, onChange }: IProps) => {
           </option>
         ))}
       </select>
+      </div>
     </div>
   );
 };

@@ -7,7 +7,7 @@ import UsersEmptyState from '@/components/modules/admin-users/users-empty-state'
 import UsersFilters from '@/components/modules/admin-users/users-filters';
 import UsersTable, { UsersTableSkeleton } from '@/components/modules/admin-users/users-table';
 import { Card, CardContent } from '@/components/ui/card';
-import { useGetAdminUsers } from '@/hooks';
+import { useGetAdminDashboard, useGetAdminUsers } from '@/hooks';
 import type { AdminUsersQuery } from '@/types/admin-users.types';
 
 const parseQuery = (params: URLSearchParams): AdminUsersQuery => {
@@ -50,11 +50,14 @@ const AdminUsersView = () => {
     [router, pathname],
   );
 
+  // Tab counts come from the (cached) dashboard stats; tabs still work without them.
+  const { data: dashboard } = useGetAdminDashboard();
+
   const users = data?.data ?? [];
 
   return (
     <div className='flex flex-col gap-4'>
-      <UsersFilters query={query} onChange={update} />
+      <UsersFilters query={query} onChange={update} counts={dashboard?.stats} />
       <Card className='gap-0 py-0'>
         <CardContent className='p-0'>
           {isPending ? (
