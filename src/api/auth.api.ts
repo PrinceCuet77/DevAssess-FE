@@ -1,8 +1,20 @@
 import apiClient from '@/lib/apiClient';
-import { loginPayload, registerPayload, forgotPasswordPayload, resetPasswordPayload } from '@/types/auth.types';
+import { loginPayload, registerPayload, resendOtpPayload, forgotPasswordPayload, resetPasswordPayload, verifyEmailPayload } from '@/types/auth.types';
 
 export const userLogin = (payload: loginPayload) => {
   return apiClient('/auth/login', { method: 'POST', body: payload });
+};
+
+export const userRegister = (payload: registerPayload) => {
+  return apiClient('/auth/register', { method: 'POST', body: payload });
+};
+
+export const userEmailAccount = (payload: verifyEmailPayload) => {
+  return apiClient('/auth/verify-email', { method: 'POST', body: payload });
+};
+
+export const userResendVerificationOtp = (payload: resendOtpPayload) => {
+  return apiClient('/auth/resend-otp', { method: 'POST', body: payload });
 };
 
 export const userRegisterUsingCredential = (payload: registerPayload) => {

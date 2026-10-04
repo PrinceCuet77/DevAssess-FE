@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm } from '@tanstack/react-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 import { Eye, EyeOff, Loader2, Lock, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import GoogleAuthButton from '@/components/form/google-auth-button';
 import FieldError from '@/components/form/field-error';
+import { useRegister } from '@/hooks';
+import { getApiErrorMessage } from '@/lib/errors';
 
 const registerSchema = z.object({
   email: z.email('Enter a valid email address'),
@@ -32,6 +36,8 @@ const ROLES = [
 
 const RegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+  const { mutate: register } = useRegister();
 
   const form = useForm({
     defaultValues: {
@@ -42,10 +48,23 @@ const RegisterForm = () => {
     validators: {
       onChange: registerSchema,
     },
-    onSubmit: async ({ value }) => {
-      // TODO: replace with a TanStack Query mutation calling POST /auth/register via apiClient.
-      console.log('register submit', value);
-    },
+    onSubmit: ({ value }) =>
+      new Promise<void>((resolve) => {
+        const email = value.email.trim().toLowerCase();
+        register(
+          { email, password: value.password, role: value.role.toUpperCase() },
+          {
+            onSuccess: () => {
+              toast.success('Account created. Enter the code we emailed you.');
+              router.push(`/verify-account?email=${encodeURIComponent(email)}`);
+            },
+            onError: (error) => {
+              toast.error(getApiErrorMessage(error, 'Something went wrong. Please try again.'));
+            },
+            onSettled: () => resolve(),
+          },
+        );
+      }),
   });
 
   return (

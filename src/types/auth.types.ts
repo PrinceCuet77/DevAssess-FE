@@ -18,3 +18,12 @@ export interface resetPasswordPayload {
   otp: string;
   newPassword: string;
 }
+
+export interface verifyEmailPayload {
+  email: string;
+  otp: string;
+}
+
+export interface resendOtpPayload {
+  email: string;
+}
