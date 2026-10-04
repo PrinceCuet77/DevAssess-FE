@@ -17,3 +17,8 @@ export interface User {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface changePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}

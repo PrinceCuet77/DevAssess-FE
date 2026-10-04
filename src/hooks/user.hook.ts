@@ -1,5 +1,5 @@
-import { getMyProfile } from '@/api/user.api';
-import { useQuery } from '@tanstack/react-query';
+import { changePassword, getMyProfile } from '@/api/user.api';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 export const useGetMyProfile = () => {
   return useQuery({
@@ -9,3 +9,9 @@ export const useGetMyProfile = () => {
     retry: false,
   });
 };
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: changePassword,
+  });
+}
