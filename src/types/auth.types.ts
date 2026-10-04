@@ -12,7 +12,3 @@ export interface registerPayload {
 export interface forgotPasswordPayload {
   email: string;
 }
-
-export interface googleOAuthPayload {
-  idToken: string;
-}

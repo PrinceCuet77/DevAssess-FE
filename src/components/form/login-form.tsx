@@ -8,7 +8,7 @@ import { FetchError } from 'ofetch';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import GoogleIcon from '@/components/form/google-icon';
+import GoogleAuthButton from '@/components/form/google-auth-button';
 import FieldError from '@/components/form/field-error';
 import { loginUserSchema } from '@/validation/auth.validation';
 import { toast } from 'sonner';
@@ -171,16 +171,7 @@ const LoginForm = () => {
         <span className='px-3 text-xs text-muted-foreground'>OR</span>
         <span className='h-px flex-1 bg-border' />
       </div>
-
-      <Button
-        type='button'
-        variant='outline'
-        size='lg'
-        className='h-11 w-full gap-2 text-base'
-      >
-        <GoogleIcon className='size-4' />
-        Continue with Google
-      </Button>
+      <GoogleAuthButton />
 
       <p className='text-center text-xs text-muted-foreground'>
         By continuing, you agree to DevAssess&apos;s{' '}

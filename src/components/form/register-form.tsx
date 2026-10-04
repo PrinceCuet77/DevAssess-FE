@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import GoogleIcon from '@/components/form/google-icon';
+import GoogleAuthButton from '@/components/form/google-auth-button';
 import FieldError from '@/components/form/field-error';
 
 const registerSchema = z.object({
@@ -164,16 +164,20 @@ const RegisterForm = () => {
         )}
       </form.Subscribe>
 
-      <div className='relative flex items-center py-1'>
-        <span className='h-px flex-1 bg-border' />
-        <span className='px-3 text-xs text-muted-foreground'>OR</span>
-        <span className='h-px flex-1 bg-border' />
-      </div>
-
-      <Button type='button' variant='outline' size='lg' className='h-11 w-full gap-2 text-base'>
-        <GoogleIcon className='size-4' />
-        Continue with Google
-      </Button>
+      <form.Subscribe selector={(state) => state.values.role}>
+        {(role) =>
+          role === 'developer' && (
+            <>
+              <div className='relative flex items-center py-1'>
+                <span className='h-px flex-1 bg-border' />
+                <span className='px-3 text-xs text-muted-foreground'>OR</span>
+                <span className='h-px flex-1 bg-border' />
+              </div>
+              <GoogleAuthButton />
+            </>
+          )
+        }
+      </form.Subscribe>
     </form>
   );
 };
