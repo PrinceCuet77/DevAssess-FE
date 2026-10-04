@@ -34,6 +34,7 @@ const UserNav = () => {
       onSuccess: () => {
         toast.success('Logged out successfully!');
         router.push('/login');
+        queryClient.removeQueries({ queryKey: ['my-profile'] });
       },
       onError: () => {
         toast.error('Logout failed. Please try again.');

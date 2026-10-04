@@ -1,18 +1,18 @@
 import type { Metadata } from 'next';
 import AuthBrandPanel from '@/components/modules/auth/brand-panel';
-import ForgetPasswordForm from '@/components/form/forgot-password-form';
+import ForgotPasswordForm from '@/components/form/forgot-password-form';
 
 export const metadata: Metadata = {
   title: 'Forgot password - DevAssess',
   description: 'Reset the password for your DevAssess account.',
 };
 
-const ForgetPasswordPage = () => {
+const ForgotPasswordPage = () => {
   return (
     <>
       <AuthBrandPanel
         title='Forgot your password? Happens to the best of us.'
-        description="Enter the email you signed up with and we'll send you a link to get back into your account."
+        description="Enter the email you signed up with and we'll send you a one-time code to get back into your account."
       />
 
       <div className='flex items-center justify-center px-4 py-10 sm:px-6'>
@@ -22,15 +22,15 @@ const ForgetPasswordPage = () => {
               Reset your password
             </h1>
             <p className='text-sm text-muted-foreground'>
-              We&apos;ll email you a secure link to set a new password.
+              We&apos;ll email you a one-time code to set a new password.
             </p>
           </div>
 
-          <ForgetPasswordForm />
+          <ForgotPasswordForm />
         </div>
       </div>
     </>
   );
 };
 
-export default ForgetPasswordPage;
+export default ForgotPasswordPage;
