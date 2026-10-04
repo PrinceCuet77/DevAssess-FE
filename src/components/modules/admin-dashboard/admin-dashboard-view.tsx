@@ -1,13 +1,30 @@
+'use client';
+
 import RecentAssessments from '@/components/modules/admin-dashboard/recent-assessments';
 import RecentPurchases from '@/components/modules/admin-dashboard/recent-purchases';
 import RecentUsers from '@/components/modules/admin-dashboard/recent-users';
 import StatsGrid from '@/components/modules/admin-dashboard/stats-grid';
-import { MOCK_ADMIN_DASHBOARD } from '@/components/modules/admin-dashboard/mock-data';
+import DashboardSkeleton from '@/components/modules/admin-dashboard/dashboard-skeleton';
 import StatusBreakdown from '@/components/modules/evaluator-dashboard/status-breakdown';
+import { Card, CardContent } from '@/components/ui/card';
+import { useGetAdminDashboard } from '@/hooks';
 
 const AdminDashboardView = () => {
-  // TODO: replace placeholder data with the admin dashboard API hook.
-  const { stats, recentUsers, recentAssessments, recentPurchases } = MOCK_ADMIN_DASHBOARD;
+  const { data, isPending, isError } = useGetAdminDashboard();
+
+  if (isPending) return <DashboardSkeleton />;
+
+  if (isError || !data) {
+    return (
+      <Card>
+        <CardContent className='py-6 text-center text-sm text-muted-foreground'>
+          We couldn&apos;t load the dashboard. Please refresh and try again.
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const { stats, recentUsers, recentAssessments, recentPurchases } = data;
 
   return (
     <div className='flex flex-col gap-6'>
