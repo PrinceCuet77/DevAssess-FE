@@ -17,7 +17,7 @@ const ListSkeleton = () => (
 const DashboardSkeleton = () => (
   <div className='flex flex-col gap-6' aria-busy='true' aria-label='Loading dashboard'>
     <div className='grid gap-4 sm:grid-cols-2 xl:grid-cols-4'>
-      {Array.from({ length: 7 }).map((_, i) => (
+      {Array.from({ length: 8 }).map((_, i) => (
         <Skeleton key={i} className='h-24 rounded-xl' />
       ))}
     </div>

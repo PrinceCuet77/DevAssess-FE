@@ -1,5 +1,6 @@
 import apiClient from '@/lib/apiClient';
 import type { AdminAssessmentDetail, AdminAssessmentRow, AdminAssessmentsQuery } from '@/types/admin-assessments.types';
+import type { AdminPurchaseRow, AdminPurchasesQuery } from '@/types/admin-purchases.types';
 import type { AdminDashboardData } from '@/types/admin-dashboard.types';
 import type { AdminSettableStatus, AdminUserDetail, AdminUserRow, AdminUsersQuery } from '@/types/admin-users.types';
 import type { ApiResponse } from '@/types/api.types';
@@ -9,7 +10,7 @@ export const getAdminDashboard = () => {
 };
 
 // The API rejects empty strings (e.g. `search=`), so drop empty params up front.
-const compact = (query: AdminUsersQuery | AdminAssessmentsQuery) =>
+const compact = (query: AdminUsersQuery | AdminAssessmentsQuery | AdminPurchasesQuery) =>
   Object.fromEntries(Object.entries(query).filter(([, v]) => v !== undefined && v !== ''));
 
 export const getAdminUsers = (query: AdminUsersQuery) => {
@@ -33,4 +34,8 @@ export const getAdminAssessments = (query: AdminAssessmentsQuery) => {
 
 export const getAdminAssessment = (assessmentId: string) => {
   return apiClient<ApiResponse<AdminAssessmentDetail>>(`/assessments/${assessmentId}`);
+};
+
+export const getAdminPurchases = (query: AdminPurchasesQuery) => {
+  return apiClient<ApiResponse<AdminPurchaseRow[]>>('/admin/purchases', { query: compact(query) });
 };

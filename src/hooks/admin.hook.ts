@@ -2,11 +2,13 @@ import {
   getAdminAssessment,
   getAdminAssessments,
   getAdminDashboard,
+  getAdminPurchases,
   getAdminUser,
   getAdminUsers,
   updateAdminUserStatus,
 } from '@/api/admin.api';
 import type { AdminAssessmentsQuery } from '@/types/admin-assessments.types';
+import type { AdminPurchasesQuery } from '@/types/admin-purchases.types';
 import type { AdminUsersQuery } from '@/types/admin-users.types';
 import {
   keepPreviousData,
@@ -86,6 +88,15 @@ export const useGetAdminAssessmentRow = (assessmentId: string) => {
         if (!meta || page >= meta.totalPages) return null;
       }
     },
+    retry: false,
+  });
+};
+
+export const useGetAdminPurchases = (query: AdminPurchasesQuery) => {
+  return useQuery({
+    queryKey: ['admin-purchases', query],
+    queryFn: () => getAdminPurchases(query),
+    placeholderData: keepPreviousData,
     retry: false,
   });
 };
