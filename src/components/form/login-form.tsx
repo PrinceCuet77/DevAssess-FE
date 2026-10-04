@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useForm } from '@tanstack/react-form';
 import { Eye, EyeOff, Loader2, Lock, Mail } from 'lucide-react';
-import { FetchError } from 'ofetch';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,24 +11,14 @@ import GoogleAuthButton from '@/components/form/google-auth-button';
 import FieldError from '@/components/form/field-error';
 import { loginUserSchema } from '@/validation/auth.validation';
 import { toast } from 'sonner';
-import { useLogin } from '@/hooks';
-import { useRouter } from 'next/navigation';
-
-const getErrorMessage = (error: unknown) => {
-  if (error instanceof FetchError) {
-    const data = error.data as { message?: string } | undefined;
-    return (
-      data?.message ?? error.statusMessage ?? 'Login failed. Please try again.'
-    );
-  }
-
-  return 'Login failed. Please try again.';
-};
+import { useLogin, usePostLoginRedirect } from '@/hooks';
+import { getApiErrorMessage } from '@/lib/errors';
+import TestLoginButtons from '@/components/form/test-login-buttons';
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
 
-  const router = useRouter();
+  const redirectToDashboard = usePostLoginRedirect();
 
   const { mutate: login, isPending: loginPending } = useLogin();
 
@@ -48,12 +37,20 @@ const LoginForm = () => {
       };
 
       login(loginData, {
-        onSuccess: () => {
-          toast.success('Login successful!');
-          router.replace('/');
+        onSuccess: async () => {
+          try {
+            await redirectToDashboard();
+            toast.success('Login successful!');
+          } catch (error) {
+            toast.error(
+              getApiErrorMessage(error, 'Login failed. Please try again.'),
+            );
+          }
         },
         onError: (error) => {
-          toast.error(getErrorMessage(error));
+          toast.error(
+            getApiErrorMessage(error, 'Login failed. Please try again.'),
+          );
         },
       });
     },
@@ -172,6 +169,8 @@ const LoginForm = () => {
         <span className='h-px flex-1 bg-border' />
       </div>
       <GoogleAuthButton />
+
+      <TestLoginButtons />
 
       <p className='text-center text-xs text-muted-foreground'>
         By continuing, you agree to DevAssess&apos;s{' '}
