@@ -6,6 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { getMyProfile } from '@/api/user.api';
+import { ROLE_DASHBOARD_PATH } from '@/constants/routes';
 
 // The API redirects here after setting the auth cookies; the URL carries no data.
 const AuthSuccessPage = () => {
@@ -18,9 +19,9 @@ const AuthSuccessPage = () => {
     getMyProfile()
       .then((response) => {
         if (cancelled) return;
-        queryClient.setQueryData(['user'], response);
+        queryClient.setQueryData(['my-profile'], response);
         toast.success('Login successful!');
-        router.replace('/');
+        router.replace(ROLE_DASHBOARD_PATH[response.data.role]);
       })
       .catch(() => {
         if (cancelled) return;

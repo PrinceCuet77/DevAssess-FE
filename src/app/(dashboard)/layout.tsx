@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import ThemeToggle from '@/components/shared/theme-toggle';
 import UserNav from '@/components/shared/user-nav';
+import AuthGuard from '@/components/auth/auth-guard';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,7 +19,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </header>
 
-      <main className='flex-1'>{children}</main>
+      <main className='flex flex-1 flex-col'>
+        <AuthGuard>{children}</AuthGuard>
+      </main>
     </div>
   );
 }
