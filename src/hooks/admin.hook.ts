@@ -1,9 +1,11 @@
 import {
+  getAdminAssessments,
   getAdminDashboard,
   getAdminUser,
   getAdminUsers,
   updateAdminUserStatus,
 } from '@/api/admin.api';
+import type { AdminAssessmentsQuery } from '@/types/admin-assessments.types';
 import type { AdminUsersQuery } from '@/types/admin-users.types';
 import {
   keepPreviousData,
@@ -25,6 +27,15 @@ export const useGetAdminUsers = (query: AdminUsersQuery) => {
   return useQuery({
     queryKey: ['admin-users', query],
     queryFn: () => getAdminUsers(query),
+    placeholderData: keepPreviousData,
+    retry: false,
+  });
+};
+
+export const useGetAdminAssessments = (query: AdminAssessmentsQuery) => {
+  return useQuery({
+    queryKey: ['admin-assessments', query],
+    queryFn: () => getAdminAssessments(query),
     placeholderData: keepPreviousData,
     retry: false,
   });

@@ -28,6 +28,13 @@ type IProps = {
 
 const UsersFilters = ({ query, onChange }: IProps) => {
   const [search, setSearch] = useState(query.search ?? '');
+  const [prevSearch, setPrevSearch] = useState(query.search);
+
+  // Keep the input in sync when the URL changes elsewhere (e.g. "Clear filters").
+  if (query.search !== prevSearch) {
+    setPrevSearch(query.search);
+    if ((query.search ?? '') !== search.trim()) setSearch(query.search ?? '');
+  }
 
   // Debounce typing so we don't hit the rate-limited API on every keystroke.
   useEffect(() => {

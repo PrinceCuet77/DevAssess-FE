@@ -2,23 +2,26 @@
 
 import { useCallback } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import AssessmentsEmptyState from '@/components/modules/admin-assessments/assessments-empty-state';
+import AssessmentsFilters from '@/components/modules/admin-assessments/assessments-filters';
+import AssessmentsTable, {
+  AssessmentsTableSkeleton,
+} from '@/components/modules/admin-assessments/assessments-table';
 import PaginationBar from '@/components/modules/admin-users/pagination-bar';
-import UsersEmptyState from '@/components/modules/admin-users/users-empty-state';
-import UsersFilters from '@/components/modules/admin-users/users-filters';
-import UsersTable, { UsersTableSkeleton } from '@/components/modules/admin-users/users-table';
 import { Card, CardContent } from '@/components/ui/card';
-import { useGetAdminUsers } from '@/hooks';
-import type { AdminUsersQuery } from '@/types/admin-users.types';
+import { useGetAdminAssessments, useGetAdminDashboard } from '@/hooks';
+import type { AdminAssessmentsQuery } from '@/types/admin-assessments.types';
 
-const parseQuery = (params: URLSearchParams): AdminUsersQuery => {
+const parseQuery = (params: URLSearchParams): AdminAssessmentsQuery => {
   const num = (key: string) => {
     const n = Number(params.get(key));
     return Number.isInteger(n) && n > 0 ? n : undefined;
   };
   const get = <T extends string>(key: string) => (params.get(key) || undefined) as T | undefined;
   return {
-    role: get('role'),
     status: get('status'),
+    creatorId: get('creatorId'),
+    tags: get('tags'),
     search: get('search'),
     sortBy: get('sortBy'),
     sortOrder: get('sortOrder'),
@@ -27,16 +30,16 @@ const parseQuery = (params: URLSearchParams): AdminUsersQuery => {
   };
 };
 
-const AdminUsersView = () => {
+const AdminAssessmentsView = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const query = parseQuery(searchParams);
-  const { data, isPending, isError, isFetching } = useGetAdminUsers(query);
+  const { data, isPending, isError, isFetching } = useGetAdminAssessments(query);
 
   // Filters live in the URL so lists are shareable and back-button friendly.
   const update = useCallback(
-    (patch: Partial<AdminUsersQuery>) => {
+    (patch: Partial<AdminAssessmentsQuery>) => {
       const next = new URLSearchParams(window.location.search);
       Object.entries(patch).forEach(([key, value]) => {
         if (value === undefined || value === '') next.delete(key);
@@ -50,29 +53,38 @@ const AdminUsersView = () => {
     [router, pathname],
   );
 
-  const users = data?.data ?? [];
+  const addTag = (tag: string) => {
+    const current = query.tags?.split(',').filter(Boolean) ?? [];
+    if (!current.includes(tag)) update({ tags: [...current, tag].join(',') });
+  };
+
+  // Tab counts come from the (cached) dashboard stats; tabs still work without them.
+  const { data: dashboard } = useGetAdminDashboard();
+
+  const assessments = data?.data ?? [];
 
   return (
     <div className='flex flex-col gap-4'>
-      <UsersFilters query={query} onChange={update} />
+      <AssessmentsFilters query={query} onChange={update} counts={dashboard?.stats} />
       <Card className='gap-0 py-0'>
         <CardContent className='p-0'>
           {isPending ? (
-            <UsersTableSkeleton />
+            <AssessmentsTableSkeleton />
           ) : isError ? (
             <p className='py-10 text-center text-sm text-muted-foreground'>
-              We couldn&apos;t load users. Please try again.
+              We couldn&apos;t load assessments. Please try again.
             </p>
-          ) : users.length === 0 ? (
-            <UsersEmptyState query={query} onChange={update} />
+          ) : assessments.length === 0 ? (
+            <AssessmentsEmptyState query={query} onChange={update} />
           ) : (
             <div className={isFetching ? 'opacity-60 transition-opacity' : undefined}>
-              <UsersTable users={users} />
+              <AssessmentsTable assessments={assessments} onTagClick={addTag} />
             </div>
           )}
           {data?.meta && (
             <PaginationBar
               meta={data.meta}
+              noun={['assessment', 'assessments']}
               onPageChange={(page) => update({ page })}
               onLimitChange={(limit) => update({ limit })}
             />
@@ -83,4 +95,4 @@ const AdminUsersView = () => {
   );
 };
 
-export default AdminUsersView;
+export default AdminAssessmentsView;

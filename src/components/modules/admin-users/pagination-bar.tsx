@@ -8,12 +8,13 @@ type IProps = {
   meta: ApiResponseMeta;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
+  noun?: [singular: string, plural: string];
 };
 
-const PaginationBar = ({ meta, onPageChange, onLimitChange }: IProps) => (
+const PaginationBar = ({ meta, onPageChange, onLimitChange, noun = ['user', 'users'] }: IProps) => (
   <div className='flex flex-col items-center justify-between gap-3 border-t border-border/60 px-4 py-3 text-sm sm:flex-row'>
     <p className='text-muted-foreground'>
-      {meta.total} {meta.total === 1 ? 'user' : 'users'} · Page {meta.page} of{' '}
+      {meta.total} {meta.total === 1 ? noun[0] : noun[1]} · Page {meta.page} of{' '}
       {Math.max(meta.totalPages, 1)}
     </p>
     <div className='flex items-center gap-2'>
