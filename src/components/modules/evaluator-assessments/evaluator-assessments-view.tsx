@@ -12,7 +12,8 @@ import AssessmentsTable, {
 import PaginationBar from '@/components/modules/admin-users/pagination-bar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useGetEvaluatorAssessments, useGetEvaluatorDashboard } from '@/hooks';
+import { salesByAssessment } from '@/components/modules/evaluator-assessments/purchase-stats';
+import { useGetEvaluatorAssessments, useGetEvaluatorDashboard, useGetEvaluatorPurchases } from '@/hooks';
 import type { EvaluatorAssessmentsQuery } from '@/types/evaluator-assessments.types';
 
 const parseQuery = (params: URLSearchParams): EvaluatorAssessmentsQuery => {
@@ -64,6 +65,8 @@ const EvaluatorAssessmentsView = () => {
 
   // Tab counts come from the (cached) dashboard stats; tabs still work without them.
   const { data: dashboard } = useGetEvaluatorDashboard();
+  const { data: purchases } = useGetEvaluatorPurchases();
+  const sales = purchases && salesByAssessment(purchases);
 
   // The API has no "exclude deleted" filter, so hide them client-side unless the Deleted tab is open.
   const rows = data?.data ?? [];
@@ -85,7 +88,7 @@ const EvaluatorAssessmentsView = () => {
             <AssessmentsEmptyState query={query} onChange={update} />
           ) : (
             <div className={isFetching ? 'opacity-60 transition-opacity' : undefined}>
-              <AssessmentsTable assessments={assessments} />
+              <AssessmentsTable assessments={assessments} sales={sales} />
             </div>
           )}
           {data?.meta && (
@@ -109,7 +112,7 @@ const EvaluatorAssessmentsView = () => {
 };
 
 export const NewAssessmentButton = () => (
-  <Button render={<Link href='/evaluator/assessments/new' />}>
+  <Button nativeButton={false} render={<Link href='/evaluator/assessments/new' />}>
     <Plus />
     New assessment
   </Button>

@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Archive, Eye, Loader2, MoreHorizontal, Pencil, Rocket, Trash2 } from 'lucide-react';
+import { Archive, Loader2, Pencil, Rocket, Trash2 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,13 +15,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { useDeleteEvaluatorAssessment, useUpdateEvaluatorAssessmentStatus } from '@/hooks';
 import { getApiErrorMessage } from '@/lib/errors';
 import type {
@@ -28,24 +22,14 @@ import type {
   EvaluatorSettableStatus,
 } from '@/types/evaluator-assessments.types';
 
-const AssessmentRowActions = ({ assessment }: { assessment: EvaluatorAssessmentRow }) => {
+const EvaluatorAssessmentActions = ({ assessment }: { assessment: EvaluatorAssessmentRow }) => {
+  const router = useRouter();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const updateStatus = useUpdateEvaluatorAssessmentStatus();
   const remove = useDeleteEvaluatorAssessment();
 
-  // Deleted rows are read-only: PATCH would still succeed server-side, but there is no undelete.
-  if (assessment.status === 'DELETED') {
-    return (
-      <Button
-        variant='ghost'
-        size='sm'
-        nativeButton={false}
-        render={<Link href={`/evaluator/assessments/detail?id=${assessment.id}`} />}
-      >
-        View
-      </Button>
-    );
-  }
+  // Deleted assessments are read-only: there is no undelete.
+  if (assessment.status === 'DELETED') return null;
 
   const changeStatus = (status: EvaluatorSettableStatus, success: string) =>
     updateStatus.mutate(
@@ -60,55 +44,39 @@ const AssessmentRowActions = ({ assessment }: { assessment: EvaluatorAssessmentR
     remove.mutate(assessment.id, {
       onSuccess: () => {
         toast.success('Assessment deleted.');
-        setConfirmOpen(false);
+        router.replace('/evaluator/assessments');
       },
       onError: (error) => toast.error(getApiErrorMessage(error, 'Could not delete assessment.')),
     });
 
-  const busy = updateStatus.isPending;
-
   return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          render={
-            <Button
-              variant='ghost'
-              size='icon'
-              aria-label={`Actions for ${assessment.title}`}
-              disabled={busy}
-            />
-          }
+    <div className='flex flex-wrap items-center gap-2'>
+      <Button
+        variant='outline'
+        nativeButton={false}
+        render={<Link href={`/evaluator/assessments/detail/edit?id=${assessment.id}`} />}
+      >
+        <Pencil /> Edit
+      </Button>
+      {assessment.status === 'PUBLISHED' ? (
+        <Button
+          variant='outline'
+          disabled={updateStatus.isPending}
+          onClick={() => changeStatus('ARCHIVED', 'Assessment archived.')}
         >
-          {busy ? <Loader2 className='animate-spin' /> : <MoreHorizontal />}
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem
-            render={<Link href={`/evaluator/assessments/detail?id=${assessment.id}`} />}
-          >
-            <Eye /> View
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            render={<Link href={`/evaluator/assessments/detail/edit?id=${assessment.id}`} />}
-          >
-            <Pencil /> Edit
-          </DropdownMenuItem>
-          {assessment.status !== 'PUBLISHED' && (
-            <DropdownMenuItem onClick={() => changeStatus('PUBLISHED', 'Assessment published.')}>
-              <Rocket /> Publish
-            </DropdownMenuItem>
-          )}
-          {assessment.status === 'PUBLISHED' && (
-            <DropdownMenuItem onClick={() => changeStatus('ARCHIVED', 'Assessment archived.')}>
-              <Archive /> Archive
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuSeparator />
-          <DropdownMenuItem variant='destructive' onClick={() => setConfirmOpen(true)}>
-            <Trash2 /> Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+          {updateStatus.isPending ? <Loader2 className='animate-spin' /> : <Archive />} Archive
+        </Button>
+      ) : (
+        <Button
+          disabled={updateStatus.isPending}
+          onClick={() => changeStatus('PUBLISHED', 'Assessment published.')}
+        >
+          {updateStatus.isPending ? <Loader2 className='animate-spin' /> : <Rocket />} Publish
+        </Button>
+      )}
+      <Button variant='destructive' onClick={() => setConfirmOpen(true)}>
+        <Trash2 /> Delete
+      </Button>
 
       <Dialog open={confirmOpen} onOpenChange={(open) => !remove.isPending && setConfirmOpen(open)}>
         <DialogContent>
@@ -131,8 +99,8 @@ const AssessmentRowActions = ({ assessment }: { assessment: EvaluatorAssessmentR
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 };
 
-export default AssessmentRowActions;
+export default EvaluatorAssessmentActions;

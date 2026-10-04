@@ -2,8 +2,10 @@ import { FileText } from 'lucide-react';
 import Link from 'next/link';
 import AssessmentStatusBadge from '@/components/modules/admin-assessments/assessment-status-badge';
 import AssessmentRowActions from '@/components/modules/evaluator-assessments/assessment-row-actions';
+import { formatMoney } from '@/components/modules/admin-purchases/purchase-utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import type { AssessmentSales } from '@/components/modules/evaluator-assessments/purchase-stats';
 import type { EvaluatorAssessmentRow } from '@/types/evaluator-assessments.types';
 
 const MAX_TAGS = 2;
@@ -38,14 +40,23 @@ const Thumbnail = ({ src }: { src: string | null }) => (
   </div>
 );
 
-const AssessmentsTable = ({ assessments }: { assessments: EvaluatorAssessmentRow[] }) => (
+const AssessmentsTable = ({
+  assessments,
+  sales,
+}: {
+  assessments: EvaluatorAssessmentRow[];
+  // Undefined while the purchases are still loading (or failed).
+  sales: Map<string, AssessmentSales> | undefined;
+}) => (
   <div className='overflow-x-auto'>
-    <table className='w-full min-w-[860px] text-sm'>
+    <table className='w-full min-w-[1000px] text-sm'>
       <thead className='border-b border-border/60 bg-muted/30'>
         <tr>
           <th className={HEAD}>Assessment</th>
           <th className={HEAD}>Status</th>
           <th className={HEAD}>Price</th>
+          <th className={HEAD}>Purchases</th>
+          <th className={HEAD}>Revenue</th>
           <th className={HEAD}>Duration</th>
           <th className={HEAD}>Pass mark</th>
           <th className={HEAD}>Created</th>
@@ -100,6 +111,12 @@ const AssessmentsTable = ({ assessments }: { assessments: EvaluatorAssessmentRow
               </td>
               <td className={cn('px-4 py-4 font-medium whitespace-nowrap tabular-nums', deleted && 'opacity-60')}>
                 {formatPrice(a.price)}
+              </td>
+              <td className={cn('px-4 py-4 whitespace-nowrap tabular-nums', deleted && 'opacity-60')}>
+                {sales ? (sales.get(a.id)?.purchases ?? 0) : '—'}
+              </td>
+              <td className={cn('px-4 py-4 font-medium whitespace-nowrap tabular-nums', deleted && 'opacity-60')}>
+                {sales ? formatMoney(sales.get(a.id)?.revenue ?? 0) : '—'}
               </td>
               <td className={cn('px-4 py-4 whitespace-nowrap tabular-nums', deleted && 'opacity-60')}>
                 {a.duration} min

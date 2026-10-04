@@ -1,7 +1,9 @@
 import {
   deleteEvaluatorAssessment,
+  getEvaluatorAssessment,
   getEvaluatorAssessments,
   getEvaluatorDashboard,
+  getEvaluatorPurchases,
   updateEvaluatorAssessmentStatus,
 } from '@/api/evaluator.api';
 import type { EvaluatorAssessmentsQuery } from '@/types/evaluator-assessments.types';
@@ -25,11 +27,29 @@ export const useGetEvaluatorAssessments = (query: EvaluatorAssessmentsQuery) => 
   });
 };
 
+export const useGetEvaluatorAssessment = (assessmentId: string) => {
+  return useQuery({
+    queryKey: ['evaluator-assessment', assessmentId],
+    queryFn: () => getEvaluatorAssessment(assessmentId),
+    select: (response) => response.data,
+    retry: false,
+  });
+};
+
+export const useGetEvaluatorPurchases = (assessmentId?: string) => {
+  return useQuery({
+    queryKey: ['evaluator-purchases', assessmentId ?? 'all'],
+    queryFn: () => getEvaluatorPurchases(assessmentId),
+    retry: false,
+  });
+};
+
 // Status changes ripple into the list and the dashboard's status breakdown / top assessments.
 const useInvalidateEvaluatorAssessments = () => {
   const queryClient = useQueryClient();
   return () => {
     queryClient.invalidateQueries({ queryKey: ['evaluator-assessments'] });
+    queryClient.invalidateQueries({ queryKey: ['evaluator-assessment'] });
     queryClient.invalidateQueries({ queryKey: ['evaluator-dashboard'] });
   };
 };

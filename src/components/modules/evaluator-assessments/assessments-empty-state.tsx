@@ -49,7 +49,7 @@ const AssessmentsEmptyState = ({ query, onChange }: IProps) => {
           Clear all filters
         </Button>
       ) : (
-        <Button render={<Link href='/evaluator/assessments/new' />}>
+        <Button nativeButton={false} render={<Link href='/evaluator/assessments/new' />}>
           <Plus />
           Create your first assessment
         </Button>
