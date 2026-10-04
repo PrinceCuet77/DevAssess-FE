@@ -47,3 +47,6 @@ export type AdminUserDetail = Omit<AdminUserRow, 'profession' | 'company'> & {
 };
 
 export type AdminUsersResponse = ApiResponse<AdminUserRow[]>;
+
+// `DELETED` is rejected by the API; admins cannot delete users here.
+export type AdminSettableStatus = Exclude<UserStatus, 'DELETED'>;

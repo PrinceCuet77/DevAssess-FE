@@ -1,6 +1,16 @@
-import { getAdminDashboard, getAdminUser, getAdminUsers } from '@/api/admin.api';
+import {
+  getAdminDashboard,
+  getAdminUser,
+  getAdminUsers,
+  updateAdminUserStatus,
+} from '@/api/admin.api';
 import type { AdminUsersQuery } from '@/types/admin-users.types';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 export const useGetAdminDashboard = () => {
   return useQuery({
@@ -26,5 +36,18 @@ export const useGetAdminUser = (userId: string) => {
     queryFn: () => getAdminUser(userId),
     select: (response) => response.data,
     retry: false,
+  });
+};
+
+// Status changes ripple into the list, the detail page and the dashboard's status breakdown.
+export const useUpdateAdminUserStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateAdminUserStatus,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-user'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
+    },
   });
 };

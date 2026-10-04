@@ -2,17 +2,24 @@
 
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ShieldAlert } from 'lucide-react';
 import { FetchError } from 'ofetch';
 import UserAvatar from '@/components/modules/admin-users/user-avatar';
-import { RoleBadge, StatusBadge } from '@/components/modules/admin-users/user-badges';
+import {
+  RoleBadge,
+  StatusBadge,
+} from '@/components/modules/admin-users/user-badges';
+import UserStatusActions from '@/components/modules/admin-users/user-status-actions';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGetAdminUser } from '@/hooks';
 import type { AdminUserDetail } from '@/types/admin-users.types';
 
-const PROVIDER_LABEL = { CREDENTIALS: 'Email / Password', GOOGLE: 'Google' } as const;
+const PROVIDER_LABEL = {
+  CREDENTIALS: 'Email / Password',
+  GOOGLE: 'Google',
+} as const;
 
 const Stat = ({ label, value }: { label: string; value: number }) => (
   <Card size='sm'>
@@ -25,7 +32,8 @@ const Stat = ({ label, value }: { label: string; value: number }) => (
 
 const statsFor = (user: AdminUserDetail) => {
   const c = user._count;
-  if (user.role === 'EVALUATOR') return [{ label: 'Assessments created', value: c.assessments }];
+  if (user.role === 'EVALUATOR')
+    return [{ label: 'Assessments created', value: c.assessments }];
   if (user.role === 'DEVELOPER')
     return [
       { label: 'Orders', value: c.purchaseAssessments },
@@ -57,7 +65,11 @@ const AdminUserDetailView = ({ userId }: { userId: string }) => {
   if (isPending) return <Skeletons />;
 
   if (!user) {
-    if (error instanceof FetchError && (error.status === 404 || error.status === 400)) notFound();
+    if (
+      error instanceof FetchError &&
+      (error.status === 404 || error.status === 400)
+    )
+      notFound();
     return (
       <>
         {back}
@@ -77,6 +89,19 @@ const AdminUserDetailView = ({ userId }: { userId: string }) => {
     <>
       {back}
       <div className='flex flex-col gap-6'>
+        {(user.status === 'SUSPENDED' || deleted) && (
+          <div
+            role='status'
+            className='flex items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm'
+          >
+            <ShieldAlert className='mt-0.5 size-4 shrink-0 text-destructive' />
+            <p>
+              {deleted
+                ? 'This account is deleted. Restoring it will reinstate it as verified.'
+                : 'This account is suspended and cannot log in or use the platform.'}
+            </p>
+          </div>
+        )}
         <Card>
           <CardContent className='flex flex-col gap-4 sm:flex-row sm:items-center'>
             <UserAvatar {...user} className='size-16' />
@@ -85,7 +110,11 @@ const AdminUserDetailView = ({ userId }: { userId: string }) => {
                 <h2 className='truncate font-heading text-xl font-semibold'>
                   {user.name ?? user.email}
                 </h2>
-                {user.name && <p className='truncate text-sm text-muted-foreground'>{user.email}</p>}
+                {user.name && (
+                  <p className='truncate text-sm text-muted-foreground'>
+                    {user.email}
+                  </p>
+                )}
               </div>
               <div className='flex flex-wrap items-center gap-2'>
                 <RoleBadge role={user.role} />
@@ -98,10 +127,15 @@ const AdminUserDetailView = ({ userId }: { userId: string }) => {
                 ))}
               </div>
             </div>
-            <div className='text-sm text-muted-foreground sm:text-right'>
-              <p>Joined {new Date(user.createdAt).toLocaleDateString()}</p>
-              <p>Updated {new Date(user.updatedAt).toLocaleDateString()}</p>
-              {user.deletedAt && <p>Deleted {new Date(user.deletedAt).toLocaleDateString()}</p>}
+            <div className='flex flex-col gap-3 sm:items-end'>
+              <UserStatusActions user={user} variant='button' />
+              <div className='text-sm text-muted-foreground sm:text-right'>
+                <p>Joined {new Date(user.createdAt).toLocaleDateString()}</p>
+                <p>Updated {new Date(user.updatedAt).toLocaleDateString()}</p>
+                {user.deletedAt && (
+                  <p>Deleted {new Date(user.deletedAt).toLocaleDateString()}</p>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -119,12 +153,17 @@ const AdminUserDetailView = ({ userId }: { userId: string }) => {
             <CardTitle>Profile</CardTitle>
           </CardHeader>
           <CardContent className='space-y-4 text-sm'>
-            <p className={user.bio ? '' : 'text-muted-foreground'}>{user.bio ?? 'No bio provided.'}</p>
+            <p className={user.bio ? '' : 'text-muted-foreground'}>
+              {user.bio ?? 'No bio provided.'}
+            </p>
             <dl className='grid gap-3 sm:grid-cols-3'>
               {[
                 ['Profession', user.profession],
                 ['Company', user.company],
-                ['Experience', `${user.experience} ${user.experience === 1 ? 'year' : 'years'}`],
+                [
+                  'Experience',
+                  `${user.experience} ${user.experience === 1 ? 'year' : 'years'}`,
+                ],
               ].map(([term, value]) => (
                 <div key={term}>
                   <dt className='text-xs text-muted-foreground'>{term}</dt>

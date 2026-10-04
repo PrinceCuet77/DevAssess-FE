@@ -5,6 +5,7 @@ import {
   RoleBadge,
   StatusBadge,
 } from '@/components/modules/admin-users/user-badges';
+import UserStatusActions from '@/components/modules/admin-users/user-status-actions';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import type { AdminUserRow } from '@/types/admin-users.types';
@@ -28,7 +29,7 @@ export const UsersTableSkeleton = () => (
 
 const UsersTable = ({ users }: { users: AdminUserRow[] }) => (
   <div className='overflow-x-auto'>
-    <table className='w-full min-w-[820px] text-sm'>
+    <table className='w-full min-w-[900px] text-sm'>
       <thead className='border-b border-border/60'>
         <tr>
           <th className={HEAD}>User</th>
@@ -37,6 +38,9 @@ const UsersTable = ({ users }: { users: AdminUserRow[] }) => (
           <th className={HEAD}>Work</th>
           <th className={HEAD}>Activity</th>
           <th className={HEAD}>Joined</th>
+          <th className={`${HEAD} w-12 text-right`}>
+            <span className='sr-only'>Actions</span>
+          </th>
         </tr>
       </thead>
       <tbody className='divide-y divide-border/60'>
@@ -87,6 +91,9 @@ const UsersTable = ({ users }: { users: AdminUserRow[] }) => (
               </td>
               <td className='px-4 py-3 text-muted-foreground'>
                 {new Date(user.createdAt).toLocaleDateString()}
+              </td>
+              <td className='px-2 py-3 text-right'>
+                <UserStatusActions user={user} />
               </td>
             </tr>
           );
