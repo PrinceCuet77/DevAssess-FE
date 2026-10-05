@@ -1,9 +1,9 @@
 import { BookOpenCheck, ClipboardList, Percent, Star, Target, Trophy } from 'lucide-react';
-import StatCard from '@/components/modules/developer-dashboard/stat-card';
+import StatCard from '@/components/shared/stat-card';
 import type { DeveloperDashboardStats } from '@/types/developer-dashboard.types';
 
 const StatsGrid = ({ stats }: { stats: DeveloperDashboardStats }) => (
-  <div className='grid gap-4 sm:grid-cols-2 xl:grid-cols-3'>
+  <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6'>
     <StatCard
       label='Purchased assessments'
       value={stats.totalPurchasedAssessments}

@@ -8,7 +8,7 @@ import {
   UserCheck,
   Users,
 } from "lucide-react";
-import StatCard from "@/components/modules/developer-dashboard/stat-card";
+import StatCard from "@/components/shared/stat-card";
 import type { AdminDashboardStats } from "@/types/admin-dashboard.types";
 
 const StatsGrid = ({ stats }: { stats: AdminDashboardStats }) => (

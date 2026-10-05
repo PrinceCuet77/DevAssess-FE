@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import PageContainer from '@/components/layout/dashboard/page-container';
+import PageHeader from '@/components/layout/dashboard/page-header';
 import DeveloperDashboardView from '@/components/modules/developer-dashboard/developer-dashboard-view';
 
 export const metadata: Metadata = {
@@ -7,15 +9,10 @@ export const metadata: Metadata = {
 
 const DeveloperDashboardPage = () => {
   return (
-    <div className='mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8'>
-      <div className='mb-6'>
-        <h1 className='font-heading text-2xl font-semibold tracking-tight'>Developer dashboard</h1>
-        <p className='text-sm text-muted-foreground'>
-          Track your assessments, attempts and results.
-        </p>
-      </div>
+    <PageContainer>
+      <PageHeader title='Developer dashboard' description='Track your assessments, attempts and results.' />
       <DeveloperDashboardView />
-    </div>
+    </PageContainer>
   );
 };
 

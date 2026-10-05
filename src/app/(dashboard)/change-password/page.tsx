@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { KeyRound } from 'lucide-react';
+import PageContainer from '@/components/layout/dashboard/page-container';
 import ChangePasswordForm from '@/components/form/change-password-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 
 const Page = () => {
   return (
-    <div className='mx-auto w-full max-w-xl px-4 py-10 sm:px-6 lg:px-8'>
+    <PageContainer size='form' className='lg:py-12'>
       <Card>
         <CardHeader>
           <span className='mb-2 flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary'>
@@ -26,7 +27,7 @@ const Page = () => {
           <ChangePasswordForm />
         </CardContent>
       </Card>
-    </div>
+    </PageContainer>
   );
 };
 

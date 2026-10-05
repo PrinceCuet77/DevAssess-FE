@@ -21,7 +21,7 @@ const DashboardSkeleton = () => (
         <Skeleton key={i} className='h-24 rounded-xl' />
       ))}
     </div>
-    <div className='grid gap-6 lg:grid-cols-2'>
+    <div className='grid gap-6 lg:grid-cols-2 2xl:grid-cols-4'>
       <ListSkeleton />
       <ListSkeleton />
       <ListSkeleton />

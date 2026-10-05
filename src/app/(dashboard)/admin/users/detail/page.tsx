@@ -1,8 +1,8 @@
 'use client';
 
 import { Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { notFound } from 'next/navigation';
+import { notFound, useSearchParams } from 'next/navigation';
+import PageContainer from '@/components/layout/dashboard/page-container';
 import AdminUserDetailView from '@/components/modules/admin-users/admin-user-detail-view';
 
 const UserDetail = () => {
@@ -13,11 +13,11 @@ const UserDetail = () => {
 };
 
 const AdminUsersDetailPage = () => (
-  <div className='mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8'>
+  <PageContainer>
     <Suspense>
       <UserDetail />
     </Suspense>
-  </div>
+  </PageContainer>
 );
 
 export default AdminUsersDetailPage;

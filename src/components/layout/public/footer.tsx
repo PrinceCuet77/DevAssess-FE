@@ -29,7 +29,7 @@ const FOOTER_LINKS = [
 const Footer = () => {
   return (
     <footer className='border-t border-border/60 bg-background'>
-      <div className='mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8'>
+      <div className='mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8'>
         <div className='grid gap-10 lg:grid-cols-[2fr_1fr_1fr_1fr]'>
           <div className='max-w-xs space-y-4'>
             <Link href='/' className='font-heading text-lg font-semibold tracking-tight'>

@@ -2,6 +2,7 @@
 
 import { Suspense } from 'react';
 import { notFound, useSearchParams } from 'next/navigation';
+import PageContainer from '@/components/layout/dashboard/page-container';
 import AdminAssessmentDetailView from '@/components/modules/admin-assessments/admin-assessment-detail-view';
 
 const AssessmentDetail = () => {
@@ -12,11 +13,11 @@ const AssessmentDetail = () => {
 };
 
 const AdminAssessmentsDetailPage = () => (
-  <div className='mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8'>
+  <PageContainer>
     <Suspense>
       <AssessmentDetail />
     </Suspense>
-  </div>
+  </PageContainer>
 );
 
 export default AdminAssessmentsDetailPage;

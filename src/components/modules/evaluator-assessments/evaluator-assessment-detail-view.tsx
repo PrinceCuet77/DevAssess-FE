@@ -102,7 +102,7 @@ const Overview = ({ a, totalMarks }: { a: EvaluatorAssessmentDetail; totalMarks:
         <CardTitle>Details</CardTitle>
       </CardHeader>
       <CardContent>
-        <dl className='grid gap-x-8 gap-y-4 sm:grid-cols-2'>
+        <dl className='grid gap-x-8 gap-y-4 sm:grid-cols-2 2xl:grid-cols-4'>
           {rows.map(([k, v]) => (
             <div key={k} className='flex items-center justify-between gap-4 border-b border-border/60 pb-3'>
               <dt className='text-sm text-muted-foreground'>{k}</dt>

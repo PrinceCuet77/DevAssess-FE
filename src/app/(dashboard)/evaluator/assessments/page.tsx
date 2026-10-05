@@ -1,5 +1,7 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
+import PageContainer from '@/components/layout/dashboard/page-container';
+import PageHeader from '@/components/layout/dashboard/page-header';
 import EvaluatorAssessmentsView, {
   NewAssessmentButton,
 } from '@/components/modules/evaluator-assessments/evaluator-assessments-view';
@@ -11,20 +13,16 @@ export const metadata: Metadata = {
 
 const EvaluatorAssessmentsPage = () => {
   return (
-    <div className='mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8'>
-      <div className='mb-6 flex flex-wrap items-end justify-between gap-3'>
-        <div>
-          <h1 className='font-heading text-2xl font-semibold tracking-tight'>My assessments</h1>
-          <p className='text-sm text-muted-foreground'>
-            Create, publish and manage the assessments you sell.
-          </p>
-        </div>
-        <NewAssessmentButton />
-      </div>
+    <PageContainer>
+      <PageHeader
+        title='My assessments'
+        description='Create, publish and manage the assessments you sell.'
+        actions={<NewAssessmentButton />}
+      />
       <Suspense fallback={<AssessmentsTableSkeleton />}>
         <EvaluatorAssessmentsView />
       </Suspense>
-    </div>
+    </PageContainer>
   );
 };
 

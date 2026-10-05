@@ -25,33 +25,35 @@ const ProfileView = () => {
   }
 
   return (
-    <div className='flex flex-col gap-6'>
+    <div className='grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_360px] 2xl:grid-cols-[minmax(0,1fr)_420px]'>
       <ProfileForm key={user.id} user={user} />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Security</CardTitle>
-          <CardDescription>Keep your account safe with a strong password.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Link href='/change-password' className={buttonVariants({ variant: 'outline' })}>
-            <KeyRound />
-            Change password
-          </Link>
-        </CardContent>
-      </Card>
+      <aside className='flex flex-col gap-6 xl:sticky xl:top-24'>
+        <Card>
+          <CardHeader>
+            <CardTitle>Security</CardTitle>
+            <CardDescription>Keep your account safe with a strong password.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link href='/change-password' className={buttonVariants({ variant: 'outline' })}>
+              <KeyRound />
+              Change password
+            </Link>
+          </CardContent>
+        </Card>
 
-      <Card className='ring-destructive/40'>
-        <CardHeader>
-          <CardTitle className='text-destructive'>Danger zone</CardTitle>
-          <CardDescription>
-            Deleting your account is permanent and can only be reversed by an administrator.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <DeleteAccountDialog />
-        </CardContent>
-      </Card>
+        <Card className='ring-destructive/40'>
+          <CardHeader>
+            <CardTitle className='text-destructive'>Danger zone</CardTitle>
+            <CardDescription>
+              Deleting your account is permanent and can only be reversed by an administrator.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DeleteAccountDialog />
+          </CardContent>
+        </Card>
+      </aside>
     </div>
   );
 };

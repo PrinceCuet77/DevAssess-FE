@@ -3,7 +3,7 @@
 import RecentReviews from '@/components/modules/evaluator-dashboard/recent-reviews';
 import RecentSales from '@/components/modules/evaluator-dashboard/recent-sales';
 import StatsGrid from '@/components/modules/evaluator-dashboard/stats-grid';
-import StatusBreakdown from '@/components/modules/evaluator-dashboard/status-breakdown';
+import StatusBreakdown from '@/components/shared/status-breakdown';
 import TopAssessments from '@/components/modules/evaluator-dashboard/top-assessments';
 import DashboardSkeleton from '@/components/modules/evaluator-dashboard/dashboard-skeleton';
 import { Card, CardContent } from '@/components/ui/card';

@@ -142,72 +142,73 @@ const AdminAssessmentDetailView = ({ assessmentId }: { assessmentId: string }) =
           </CardContent>
         </Card>
 
-        <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+        <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-7'>
           <Stat label='Price (BDT)' value={Number(assessment.price).toFixed(2)} icon={Wallet} />
           <Stat label='Duration (min)' value={assessment.duration} icon={Clock} />
           <Stat label='Passing score' value={`${assessment.passingPercentage}%`} icon={Target} />
           <Stat label='Avg. rating' value={average === null ? 'N/A' : average.toFixed(1)} icon={Star} />
+          {row && (
+            <>
+              <Stat label='Orders' value={row._count.purchases} icon={Receipt} />
+              <Stat label='Attempts' value={row._count.attempts} icon={Trophy} />
+              <Stat label='Reviews' value={row._count.reviews} icon={FileText} />
+            </>
+          )}
         </div>
 
-        {row && (
-          <div className='grid gap-4 sm:grid-cols-3'>
-            <Stat label='Orders' value={row._count.purchases} icon={Receipt} />
-            <Stat label='Attempts' value={row._count.attempts} icon={Trophy} />
-            <Stat label='Reviews' value={row._count.reviews} icon={FileText} />
-          </div>
-        )}
+        <div className='grid items-start gap-6 xl:grid-cols-3'>
+          <Card>
+            <CardHeader>
+              <CardTitle>Evaluator</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Link
+                href={`/admin/users/detail?id=${assessment.creator.id}`}
+                className='flex items-center gap-3 hover:underline'
+              >
+                <UserAvatar name={assessment.creator.name} email={assessment.creator.email} avatarUrl={null} />
+                <div className='min-w-0'>
+                  <p className='truncate font-medium'>{assessment.creator.name ?? assessment.creator.email}</p>
+                  {assessment.creator.name && (
+                    <p className='truncate text-sm text-muted-foreground'>{assessment.creator.email}</p>
+                  )}
+                </div>
+              </Link>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Evaluator</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Link
-              href={`/admin/users/detail?id=${assessment.creator.id}`}
-              className='flex items-center gap-3 hover:underline'
-            >
-              <UserAvatar name={assessment.creator.name} email={assessment.creator.email} avatarUrl={null} />
-              <div className='min-w-0'>
-                <p className='truncate font-medium'>{assessment.creator.name ?? assessment.creator.email}</p>
-                {assessment.creator.name && (
-                  <p className='truncate text-sm text-muted-foreground'>{assessment.creator.email}</p>
-                )}
-              </div>
-            </Link>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Reviews ({reviews.length})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {reviews.length === 0 ? (
-              <p className='text-sm text-muted-foreground'>No reviews yet.</p>
-            ) : (
-              <ul className='divide-y divide-border/60'>
-                {reviews.map((review) => (
-                  <li key={review.id} className='flex flex-col gap-1 py-3 first:pt-0 last:pb-0'>
-                    <div className='flex items-center justify-between gap-3'>
-                      <Link
-                        href={`/admin/users/detail?id=${review.developer.id}`}
-                        className='truncate text-sm font-medium hover:underline'
-                      >
-                        {review.developer.name ?? review.developer.email}
-                      </Link>
-                      <span className='flex items-center gap-1 text-sm tabular-nums' aria-label={`${review.rating} out of 5`}>
-                        <Star className='size-4 fill-amber-400 text-amber-400' /> {review.rating}
-                      </span>
-                    </div>
-                    <p className={review.comment ? 'text-sm' : 'text-sm text-muted-foreground'}>
-                      {review.comment ?? 'No comment.'}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
+          <Card className='xl:col-span-2'>
+            <CardHeader>
+              <CardTitle>Reviews ({reviews.length})</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {reviews.length === 0 ? (
+                <p className='text-sm text-muted-foreground'>No reviews yet.</p>
+              ) : (
+                <ul className='divide-y divide-border/60'>
+                  {reviews.map((review) => (
+                    <li key={review.id} className='flex flex-col gap-1 py-3 first:pt-0 last:pb-0'>
+                      <div className='flex items-center justify-between gap-3'>
+                        <Link
+                          href={`/admin/users/detail?id=${review.developer.id}`}
+                          className='truncate text-sm font-medium hover:underline'
+                        >
+                          {review.developer.name ?? review.developer.email}
+                        </Link>
+                        <span className='flex items-center gap-1 text-sm tabular-nums' aria-label={`${review.rating} out of 5`}>
+                          <Star className='size-4 fill-amber-400 text-amber-400' /> {review.rating}
+                        </span>
+                      </div>
+                      <p className={review.comment ? 'text-sm' : 'text-sm text-muted-foreground'}>
+                        {review.comment ?? 'No comment.'}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </>
   );

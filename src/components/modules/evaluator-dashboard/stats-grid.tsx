@@ -1,9 +1,9 @@
 import { BookOpenCheck, ClipboardList, Coins, ShoppingBag, Star, Target } from 'lucide-react';
-import StatCard from '@/components/modules/developer-dashboard/stat-card';
+import StatCard from '@/components/shared/stat-card';
 import type { EvaluatorDashboardStats } from '@/types/evaluator-dashboard.types';
 
 const StatsGrid = ({ stats }: { stats: EvaluatorDashboardStats }) => (
-  <div className='grid gap-4 sm:grid-cols-2 xl:grid-cols-3'>
+  <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6'>
     <StatCard
       label='Total revenue'
       value={`BDT ${Number(stats.totalRevenue).toFixed(2)}`}

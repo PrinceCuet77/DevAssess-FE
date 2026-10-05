@@ -5,7 +5,7 @@ import RecentPurchases from '@/components/modules/admin-dashboard/recent-purchas
 import RecentUsers from '@/components/modules/admin-dashboard/recent-users';
 import StatsGrid from '@/components/modules/admin-dashboard/stats-grid';
 import DashboardSkeleton from '@/components/modules/admin-dashboard/dashboard-skeleton';
-import StatusBreakdown from '@/components/modules/evaluator-dashboard/status-breakdown';
+import StatusBreakdown from '@/components/shared/status-breakdown';
 import { Card, CardContent } from '@/components/ui/card';
 import { useGetAdminDashboard } from '@/hooks';
 
@@ -29,7 +29,7 @@ const AdminDashboardView = () => {
   return (
     <div className='flex flex-col gap-6'>
       <StatsGrid stats={stats} />
-      <div className='grid gap-6 lg:grid-cols-2'>
+      <div className='grid gap-6 lg:grid-cols-2 2xl:grid-cols-4'>
         <StatusBreakdown
           title='Users by role'
           description='Who is on the platform.'
