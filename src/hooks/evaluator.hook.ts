@@ -1,10 +1,12 @@
 import {
+  createEvaluatorAssessment,
   deleteEvaluatorAssessment,
   getEvaluatorAssessment,
   getEvaluatorAssessments,
   getEvaluatorDashboard,
   getEvaluatorPurchases,
   updateEvaluatorAssessmentStatus,
+  uploadAssessmentThumbnail,
 } from '@/api/evaluator.api';
 import type { EvaluatorAssessmentsQuery } from '@/types/evaluator-assessments.types';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -62,4 +64,13 @@ export const useUpdateEvaluatorAssessmentStatus = () => {
 export const useDeleteEvaluatorAssessment = () => {
   const invalidate = useInvalidateEvaluatorAssessments();
   return useMutation({ mutationFn: deleteEvaluatorAssessment, onSuccess: invalidate });
+};
+
+export const useCreateEvaluatorAssessment = () => {
+  const invalidate = useInvalidateEvaluatorAssessments();
+  return useMutation({ mutationFn: createEvaluatorAssessment, onSuccess: invalidate });
+};
+
+export const useUploadAssessmentThumbnail = () => {
+  return useMutation({ mutationFn: uploadAssessmentThumbnail });
 };

@@ -10,11 +10,14 @@ interface SkillsInputProps {
   value: string[];
   onChange: (skills: string[]) => void;
   disabled?: boolean;
+  // Lets other forms (e.g. assessment tags) reuse the chip input.
+  max?: number;
+  noun?: string;
 }
 
-const SkillsInput = ({ id, value, onChange, disabled }: SkillsInputProps) => {
+const SkillsInput = ({ id, value, onChange, disabled, max = MAX_SKILLS, noun = 'skill' }: SkillsInputProps) => {
   const [draft, setDraft] = useState('');
-  const limitReached = value.length >= MAX_SKILLS;
+  const limitReached = value.length >= max;
 
   const addSkill = (raw: string) => {
     const skill = raw.trim();
@@ -30,7 +33,7 @@ const SkillsInput = ({ id, value, onChange, disabled }: SkillsInputProps) => {
         id={id}
         value={draft}
         disabled={disabled || limitReached}
-        placeholder={limitReached ? 'Skill limit reached' : 'Type a skill and press Enter'}
+        placeholder={limitReached ? `${noun[0].toUpperCase()}${noun.slice(1)} limit reached` : `Type a ${noun} and press Enter`}
         className='h-11'
         onChange={(event) => {
           const next = event.target.value;
@@ -48,7 +51,7 @@ const SkillsInput = ({ id, value, onChange, disabled }: SkillsInputProps) => {
         onBlur={() => addSkill(draft)}
       />
       {value.length > 0 && (
-        <ul className='flex flex-wrap gap-2' aria-label='Selected skills'>
+        <ul className='flex flex-wrap gap-2' aria-label={`Selected ${noun}s`}>
           {value.map((skill) => (
             <li
               key={skill}
@@ -69,7 +72,7 @@ const SkillsInput = ({ id, value, onChange, disabled }: SkillsInputProps) => {
         </ul>
       )}
       <p className='text-xs text-muted-foreground' aria-live='polite'>
-        {value.length}/{MAX_SKILLS} skills · Press Enter or comma to add
+        {value.length}/{max} {noun}s · Press Enter or comma to add
       </p>
     </div>
   );

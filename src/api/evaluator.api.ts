@@ -1,11 +1,13 @@
 import apiClient from '@/lib/apiClient';
 import type { ApiResponse } from '@/types/api.types';
 import type {
+  CreateAssessmentPayload,
   EvaluatorAssessmentDetail,
   EvaluatorAssessmentRow,
   EvaluatorAssessmentsQuery,
   EvaluatorPurchaseRow,
   EvaluatorSettableStatus,
+  ThumbnailPresign,
 } from '@/types/evaluator-assessments.types';
 import type { EvaluatorDashboardData } from '@/types/evaluator-dashboard.types';
 
@@ -44,6 +46,36 @@ export const deleteEvaluatorAssessment = (assessmentId: string) => {
   return apiClient<ApiResponse<null>>(`/evaluator/assessments/${assessmentId}`, {
     method: 'DELETE',
   });
+};
+
+export const createEvaluatorAssessment = (payload: CreateAssessmentPayload) => {
+  return apiClient<ApiResponse<EvaluatorAssessmentRow>>('/evaluator/assessment', {
+    method: 'POST',
+    body: payload,
+  });
+};
+
+export const getThumbnailPresign = (payload: { fileName: string; fileType: string }) => {
+  return apiClient<ApiResponse<ThumbnailPresign>>('/evaluator/assessment/thumbnail/presign', {
+    method: 'POST',
+    body: payload,
+  });
+};
+
+// Goes straight to S3: no cookies, no auth header, and Content-Type must match the presigned fileType.
+const uploadThumbnailToS3 = async (uploadUrl: string, file: File) => {
+  const response = await fetch(uploadUrl, {
+    method: 'PUT',
+    headers: { 'Content-Type': file.type },
+    body: file,
+  });
+  if (!response.ok) throw new Error('Thumbnail upload failed');
+};
+
+export const uploadAssessmentThumbnail = async (file: File) => {
+  const { data } = await getThumbnailPresign({ fileName: file.name, fileType: file.type });
+  await uploadThumbnailToS3(data.uploadUrl, file);
+  return data;
 };
 
 const PURCHASES_PAGE_SIZE = 100;

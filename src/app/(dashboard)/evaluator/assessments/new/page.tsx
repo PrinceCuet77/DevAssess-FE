@@ -1,18 +1,12 @@
 import type { Metadata } from 'next';
-import PlaceholderPage from '@/components/shared/placeholder-page';
+import CreateAssessmentView from '@/components/modules/evaluator-assessment-create/create-assessment-view';
 
 export const metadata: Metadata = {
   title: 'New assessment - DevAssess',
 };
 
 const EvaluatorAssessmentsNewPage = () => {
-  return (
-    <PlaceholderPage
-      title='New assessment'
-      description='Create a new assessment.'
-      api='POST /evaluator/assessment'
-    />
-  );
+  return <CreateAssessmentView />;
 };
 
 export default EvaluatorAssessmentsNewPage;

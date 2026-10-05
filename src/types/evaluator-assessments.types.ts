@@ -89,3 +89,25 @@ export type EvaluatorPurchaseRow = {
   // Newest first.
   payments: EvaluatorPurchasePayment[];
 };
+
+export type CreateAssessmentPayload = {
+  title: string;
+  description?: string;
+  // Integer minutes.
+  duration: number;
+  // JSON number, not a string; 0 = free.
+  price: number;
+  passingPercentage: number;
+  thumbnailKey?: string;
+  tags?: string[];
+  questions: EvaluatorQuestion[];
+  // Sent as `answer` (singular) but returned as `answers` on the assessment objects.
+  answer: EvaluatorAnswerKey[];
+};
+
+export type ThumbnailPresign = {
+  uploadUrl: string;
+  key: string;
+  thumbnailUrl: string;
+  expiresInSeconds: number;
+};
