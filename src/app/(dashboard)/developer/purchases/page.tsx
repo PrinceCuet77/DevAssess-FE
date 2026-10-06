@@ -1,5 +1,9 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
-import PlaceholderPage from '@/components/shared/placeholder-page';
+import PageContainer from '@/components/layout/dashboard/page-container';
+import PageHeader from '@/components/layout/dashboard/page-header';
+import DeveloperPurchasesView from '@/components/modules/developer-purchases/developer-purchases-view';
+import PurchasesSkeleton from '@/components/modules/developer-purchases/purchases-skeleton';
 
 export const metadata: Metadata = {
   title: 'Purchases - DevAssess',
@@ -7,11 +11,15 @@ export const metadata: Metadata = {
 
 const DeveloperPurchasesPage = () => {
   return (
-    <PlaceholderPage
-      title='Purchases'
-      description='Your purchase history.'
-      api='GET /purchases'
-    />
+    <PageContainer>
+      <PageHeader
+        title='Purchases'
+        description='Your orders and their payment status. Finish an unpaid order to unlock its assessments.'
+      />
+      <Suspense fallback={<PurchasesSkeleton />}>
+        <DeveloperPurchasesView />
+      </Suspense>
+    </PageContainer>
   );
 };
 

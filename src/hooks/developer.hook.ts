@@ -1,11 +1,17 @@
 import {
   getAssessmentAttempts,
   getDeveloperAssessment,
+  createPayment,
   getDeveloperDashboard,
+  getDeveloperPurchaseList,
   getPaidPurchases,
 } from '@/api/developer.api';
-import { useQuery } from '@tanstack/react-query';
-import type { DeveloperPurchase, OwnedAssessment } from '@/types/developer-assessments.types';
+import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
+import type {
+  DeveloperPurchase,
+  DeveloperPurchasesQuery,
+  OwnedAssessment,
+} from '@/types/developer-assessments.types';
 
 export const useGetDeveloperDashboard = () => {
   return useQuery({
@@ -58,4 +64,17 @@ export const useGetAssessmentAttempts = (assessmentId: string) => {
     select: (response) => response.data.attempts,
     retry: false,
   });
+};
+
+export const useGetDeveloperPurchaseList = (query: DeveloperPurchasesQuery) => {
+  return useQuery({
+    queryKey: ['developer-purchase-list', query],
+    queryFn: () => getDeveloperPurchaseList(query),
+    placeholderData: keepPreviousData,
+    retry: false,
+  });
+};
+
+export const useCreatePayment = () => {
+  return useMutation({ mutationFn: createPayment });
 };

@@ -13,7 +13,11 @@ export type DeveloperPurchaseAssessment = {
 
 export type DeveloperPurchasePayment = {
   id: string;
+  transactionId: string;
+  amount: string;
+  currency: string;
   status: PaymentStatus;
+  method: string | null;
   paidAt: string | null;
   createdAt: string;
 };
@@ -79,4 +83,18 @@ export type AssessmentAttempt = {
 export type AssessmentAttempts = {
   assessment: { id: string; title: string };
   attempts: AssessmentAttempt[];
+};
+
+export type DeveloperPurchasesQuery = {
+  paymentStatus?: PaymentStatus;
+  search?: string;
+  sortBy?: 'createdAt' | 'price';
+  sortOrder?: 'asc' | 'desc';
+  page?: number;
+  limit?: number;
+};
+
+export type CreatePaymentResult = {
+  gatewayPageURL: string;
+  transactionId: string;
 };
