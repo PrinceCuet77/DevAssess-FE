@@ -113,10 +113,10 @@ const AssessmentsTable = ({
                 {formatPrice(a.price)}
               </td>
               <td className={cn('px-4 py-4 whitespace-nowrap tabular-nums', deleted && 'opacity-60')}>
-                {sales ? (sales.get(a.id)?.purchases ?? 0) : '—'}
+                {sales ? (sales.get(a.id)?.purchases ?? 0) : 'N/A'}
               </td>
               <td className={cn('px-4 py-4 font-medium whitespace-nowrap tabular-nums', deleted && 'opacity-60')}>
-                {sales ? formatMoney(sales.get(a.id)?.revenue ?? 0) : '—'}
+                {sales ? formatMoney(sales.get(a.id)?.revenue ?? 0) : 'N/A'}
               </td>
               <td className={cn('px-4 py-4 whitespace-nowrap tabular-nums', deleted && 'opacity-60')}>
                 {a.duration} min

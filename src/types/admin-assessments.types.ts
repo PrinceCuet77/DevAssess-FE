@@ -36,7 +36,7 @@ export type AdminAssessmentRow = {
   _count: { purchases: number; reviews: number; attempts: number };
 };
 
-// `GET /assessments/:id` — the public detail payload. The backend has no `GET /admin/assessments/:id`
+// `GET /assessments/:id` - the public detail payload. The backend has no `GET /admin/assessments/:id`
 // yet, so this is the only single-assessment endpoint an admin can call. PUBLISHED assessments only.
 export type AdminAssessmentReview = {
   id: string;

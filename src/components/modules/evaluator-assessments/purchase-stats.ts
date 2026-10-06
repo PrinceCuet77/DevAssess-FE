@@ -1,5 +1,5 @@
 import { deriveOrderStatus } from '@/components/modules/admin-purchases/purchase-utils';
-import type { EvaluatorPurchaseRow } from '@/types/evaluator-assessments.types';
+import type { EvaluatorPurchaseRow } from '@/types/evaluator-purchases.types';
 
 export type AssessmentSales = { purchases: number; revenue: number };
 

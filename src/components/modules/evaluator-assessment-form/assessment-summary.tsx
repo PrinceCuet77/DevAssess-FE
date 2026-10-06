@@ -31,9 +31,9 @@ const AssessmentSummary = ({ questions, passingPercentage, duration, price }: As
         <dl className='flex flex-col gap-3'>
           <Row label='Questions' value={String(questions.length)} />
           <Row label='Total marks' value={String(totalMarks)} />
-          <Row label='Marks to pass' value={validPercentage ? `${marksToPass} (${validPercentage}%)` : '—'} />
-          <Row label='Duration' value={Number.isFinite(duration) && duration > 0 ? `${duration} min` : '—'} />
-          <Row label='Price' value={!Number.isFinite(price) ? '—' : price === 0 ? 'Free' : `৳${price}`} />
+          <Row label='Marks to pass' value={validPercentage ? `${marksToPass} (${validPercentage}%)` : 'N/A'} />
+          <Row label='Duration' value={Number.isFinite(duration) && duration > 0 ? `${duration} min` : 'N/A'} />
+          <Row label='Price' value={!Number.isFinite(price) ? 'N/A' : price === 0 ? 'Free' : `৳${price}`} />
         </dl>
       </CardContent>
     </Card>

@@ -1,5 +1,9 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
-import PlaceholderPage from '@/components/shared/placeholder-page';
+import PageContainer from '@/components/layout/dashboard/page-container';
+import PageHeader from '@/components/layout/dashboard/page-header';
+import EvaluatorPurchasesView from '@/components/modules/evaluator-purchases/evaluator-purchases-view';
+import { DataTableSkeleton } from '@/components/ui/data-table';
 
 export const metadata: Metadata = {
   title: 'Sales - DevAssess',
@@ -7,11 +11,15 @@ export const metadata: Metadata = {
 
 const EvaluatorPurchasesPage = () => {
   return (
-    <PlaceholderPage
-      title='Sales'
-      description='Purchases of your assessments.'
-      api='GET /evaluator/purchases'
-    />
+    <PageContainer>
+      <PageHeader
+        title='Sales'
+        description='Orders that include your assessments, what you earned, and how they were paid.'
+      />
+      <Suspense fallback={<DataTableSkeleton leadingRound />}>
+        <EvaluatorPurchasesView />
+      </Suspense>
+    </PageContainer>
   );
 };
 

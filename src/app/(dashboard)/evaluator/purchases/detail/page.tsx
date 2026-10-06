@@ -2,26 +2,22 @@
 
 import { Suspense } from 'react';
 import { notFound, useSearchParams } from 'next/navigation';
-import PlaceholderPage from '@/components/shared/placeholder-page';
+import PageContainer from '@/components/layout/dashboard/page-container';
+import EvaluatorPurchaseDetailView from '@/components/modules/evaluator-purchases/evaluator-purchase-detail-view';
 
-const Content = () => {
+const PurchaseDetail = () => {
   const id = useSearchParams().get('id');
   if (!id) notFound();
 
-  return (
-    <PlaceholderPage
-      title='Sale details'
-      description='Line items for this purchase.'
-      api='GET /evaluator/purchases/:id'
-      resourceId={id}
-    />
-  );
+  return <EvaluatorPurchaseDetailView purchaseId={id} />;
 };
 
 const EvaluatorPurchasesDetailPage = () => (
-  <Suspense>
-    <Content />
-  </Suspense>
+  <PageContainer>
+    <Suspense>
+      <PurchaseDetail />
+    </Suspense>
+  </PageContainer>
 );
 
 export default EvaluatorPurchasesDetailPage;

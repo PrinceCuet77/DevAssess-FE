@@ -1,4 +1,3 @@
-import type { PaymentStatus } from '@/types/developer-dashboard.types';
 import type { SortOrder } from '@/types/admin-users.types';
 import type { AssessmentStatus } from '@/types/evaluator-dashboard.types';
 
@@ -35,7 +34,7 @@ export type EvaluatorAssessmentRow = {
   updatedAt: string;
 };
 
-// Statuses that PATCH accepts — `DELETED` is only reachable through DELETE.
+// Statuses that PATCH accepts - `DELETED` is only reachable through DELETE.
 export type EvaluatorSettableStatus = Exclude<AssessmentStatus, 'DELETED'>;
 
 export type EvaluatorQuestion = {
@@ -65,31 +64,6 @@ export type EvaluatorAssessmentDetail = EvaluatorAssessmentRow & {
   reviews: EvaluatorAssessmentReview[];
 };
 
-export type EvaluatorPurchasePayment = {
-  id: string;
-  transactionId: string;
-  status: PaymentStatus;
-  amount: string;
-  currency: string;
-  method: string | null;
-  paidAt: string | null;
-  createdAt: string;
-};
-
-export type EvaluatorPurchaseRow = {
-  id: string;
-  // Whole-order total — not the evaluator's share.
-  price: string;
-  // The evaluator's own earnings on this order.
-  subtotal: string;
-  createdAt: string;
-  customer: { id: string; name: string | null; email: string };
-  // Only the evaluator's own lines; `price` is the current list price, not the paid price.
-  assessments: { id: string; title: string; price: string }[];
-  // Newest first.
-  payments: EvaluatorPurchasePayment[];
-};
-
 export type CreateAssessmentPayload = {
   title: string;
   description?: string;
@@ -106,7 +80,7 @@ export type CreateAssessmentPayload = {
 };
 
 // PATCH is a partial update. `questions` and `answer` must travel together (the API rejects one alone),
-// and `thumbnailKey` can only replace the image — there is no way to remove it.
+// and `thumbnailKey` can only replace the image - there is no way to remove it.
 export type UpdateAssessmentPayload = Partial<Omit<CreateAssessmentPayload, 'questions' | 'answer'>> &
   (
     | { questions: CreateAssessmentPayload['questions']; answer: CreateAssessmentPayload['answer'] }

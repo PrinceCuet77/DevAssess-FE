@@ -30,7 +30,8 @@ import {
 import { orderAmountFor, salesByAssessment } from '@/components/modules/evaluator-assessments/purchase-stats';
 import { useGetEvaluatorAssessment, useGetEvaluatorPurchases } from '@/hooks';
 import { cn } from '@/lib/utils';
-import type { EvaluatorAssessmentDetail, EvaluatorPurchaseRow } from '@/types/evaluator-assessments.types';
+import type { EvaluatorAssessmentDetail } from '@/types/evaluator-assessments.types';
+import type { EvaluatorPurchaseRow } from '@/types/evaluator-purchases.types';
 
 type Tab = 'overview' | 'questions' | 'reviews' | 'purchases';
 
@@ -359,10 +360,10 @@ const EvaluatorAssessmentDetailView = ({ assessmentId }: { assessmentId: string 
 
         <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
           <Stat label='Price' value={formatPrice(assessment.price)} icon={Wallet} />
-          <Stat label='Purchases' value={purchases.data ? (sales?.purchases ?? 0) : '—'} icon={ShoppingCart} />
+          <Stat label='Purchases' value={purchases.data ? (sales?.purchases ?? 0) : 'N/A'} icon={ShoppingCart} />
           <Stat
             label='Revenue'
-            value={purchases.data ? formatMoney(sales?.revenue ?? 0) : '—'}
+            value={purchases.data ? formatMoney(sales?.revenue ?? 0) : 'N/A'}
             icon={Wallet}
           />
           <Stat label='Avg. rating' value={average === null ? 'N/A' : average.toFixed(1)} icon={Star} />

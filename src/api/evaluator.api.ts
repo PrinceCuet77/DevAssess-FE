@@ -5,19 +5,23 @@ import type {
   EvaluatorAssessmentDetail,
   EvaluatorAssessmentRow,
   EvaluatorAssessmentsQuery,
-  EvaluatorPurchaseRow,
   EvaluatorSettableStatus,
   ThumbnailPresign,
   UpdateAssessmentPayload,
 } from '@/types/evaluator-assessments.types';
 import type { EvaluatorDashboardData } from '@/types/evaluator-dashboard.types';
+import type {
+  EvaluatorPurchaseRow,
+  EvaluatorPurchasesQuery,
+  UpdatePurchasePricePayload,
+} from '@/types/evaluator-purchases.types';
 
 export const getEvaluatorDashboard = () => {
   return apiClient<ApiResponse<EvaluatorDashboardData>>('/evaluator/dashboard');
 };
 
 // The API rejects empty strings (e.g. `search=`), so drop empty params up front.
-const compact = (query: EvaluatorAssessmentsQuery) =>
+const compact = (query: object) =>
   Object.fromEntries(
     Object.entries(query).filter(([, v]) => v !== undefined && v !== ''),
   );
@@ -135,4 +139,33 @@ export const getEvaluatorPurchases = async (assessmentId?: string) => {
     page += 1;
   } while (page <= totalPages);
   return rows;
+};
+
+export const getEvaluatorPurchaseList = (query: EvaluatorPurchasesQuery) => {
+  return apiClient<ApiResponse<EvaluatorPurchaseRow[]>>('/evaluator/purchases', {
+    query: compact(query),
+  });
+};
+
+export const getEvaluatorPurchase = (purchaseId: string) => {
+  return apiClient<ApiResponse<EvaluatorPurchaseRow>>(
+    `/evaluator/purchases/${purchaseId}`,
+  );
+};
+
+// Overrides one of my line prices and recalculates the order total; existing payments are untouched.
+export const updateEvaluatorPurchasePrice = ({
+  purchaseId,
+  payload,
+}: {
+  purchaseId: string;
+  payload: UpdatePurchasePricePayload;
+}) => {
+  return apiClient<ApiResponse<EvaluatorPurchaseRow>>(
+    `/evaluator/purchases/${purchaseId}`,
+    {
+      method: 'PATCH',
+      body: payload,
+    },
+  );
 };

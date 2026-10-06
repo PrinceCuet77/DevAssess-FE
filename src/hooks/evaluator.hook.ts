@@ -4,12 +4,16 @@ import {
   getEvaluatorAssessment,
   getEvaluatorAssessments,
   getEvaluatorDashboard,
+  getEvaluatorPurchase,
+  getEvaluatorPurchaseList,
   getEvaluatorPurchases,
   updateEvaluatorAssessment,
   updateEvaluatorAssessmentStatus,
+  updateEvaluatorPurchasePrice,
   uploadAssessmentThumbnail,
 } from '@/api/evaluator.api';
 import type { EvaluatorAssessmentsQuery } from '@/types/evaluator-assessments.types';
+import type { EvaluatorPurchasesQuery } from '@/types/evaluator-purchases.types';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const useGetEvaluatorDashboard = () => {
@@ -44,6 +48,38 @@ export const useGetEvaluatorPurchases = (assessmentId?: string) => {
     queryKey: ['evaluator-purchases', assessmentId ?? 'all'],
     queryFn: () => getEvaluatorPurchases(assessmentId),
     retry: false,
+  });
+};
+
+export const useGetEvaluatorPurchaseList = (query: EvaluatorPurchasesQuery) => {
+  return useQuery({
+    queryKey: ['evaluator-purchase-list', query],
+    queryFn: () => getEvaluatorPurchaseList(query),
+    placeholderData: keepPreviousData,
+    retry: false,
+  });
+};
+
+export const useGetEvaluatorPurchase = (purchaseId: string) => {
+  return useQuery({
+    queryKey: ['evaluator-purchase', purchaseId],
+    queryFn: () => getEvaluatorPurchase(purchaseId),
+    select: (response) => response.data,
+    retry: false,
+  });
+};
+
+// A price override changes `subtotal`, so every sales figure (lists, per-assessment sales, revenue) goes stale.
+export const useUpdateEvaluatorPurchasePrice = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateEvaluatorPurchasePrice,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['evaluator-purchase-list'] });
+      queryClient.invalidateQueries({ queryKey: ['evaluator-purchase'] });
+      queryClient.invalidateQueries({ queryKey: ['evaluator-purchases'] });
+      queryClient.invalidateQueries({ queryKey: ['evaluator-dashboard'] });
+    },
   });
 };
 
