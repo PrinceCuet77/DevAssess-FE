@@ -3,6 +3,8 @@ import { Clock } from 'lucide-react';
 import { Stars } from '@/components/modules/developer-assessments/assessment-reviews-panel';
 import { formatDateTime } from '@/components/modules/admin-purchases/purchase-utils';
 import AssessmentThumbnail from '@/components/modules/evaluator-purchases/assessment-thumbnail';
+import DeleteReviewDialog from '@/components/modules/developer-reviews/delete-review-dialog';
+import ReviewFormDialog from '@/components/modules/developer-reviews/review-form-dialog';
 import ReviewDetailDialog from '@/components/modules/developer-reviews/review-detail-dialog';
 import { RATING_LABELS } from '@/components/modules/developer-reviews/review-utils';
 import { Card } from '@/components/ui/card';
@@ -45,7 +47,17 @@ const ReviewCard = ({ review }: { review: DeveloperReview }) => {
         <p className='text-xs text-muted-foreground'>
           {edited ? 'Edited' : 'Reviewed'} {formatDateTime(edited ? review.updatedAt : review.createdAt)}
         </p>
-        <ReviewDetailDialog reviewId={review.id} />
+        <div className='flex items-center'>
+          <ReviewDetailDialog reviewId={review.id} />
+          <ReviewFormDialog
+            mode='edit'
+            reviewId={review.id}
+            assessmentTitle={review.assessment.title}
+            rating={review.rating}
+            comment={review.comment}
+          />
+          <DeleteReviewDialog reviewId={review.id} assessmentTitle={review.assessment.title} />
+        </div>
       </div>
     </Card>
   );

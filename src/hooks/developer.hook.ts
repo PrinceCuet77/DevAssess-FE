@@ -10,8 +10,11 @@ import {
   getDeveloperPurchase,
   getDeveloperReviewList,
   getDeveloperReview,
+  createReview,
+  updateReview,
+  deleteReview,
 } from '@/api/developer.api';
-import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
   DeveloperPaymentsQuery,
   DeveloperPurchase,
@@ -132,4 +135,31 @@ export const useGetDeveloperReview = (reviewId: string, enabled = true) => {
     enabled,
     retry: false,
   });
+};
+
+// Reviews show up in the "my reviews" list, the single-review modal and the embedded
+// `reviews` array of every assessment, so refresh all of them after a write.
+const useInvalidateReviews = () => {
+  const queryClient = useQueryClient();
+  return () =>
+    Promise.all(
+      ['developer-review-list', 'developer-review', 'developer-assessment', 'developer-dashboard'].map((key) =>
+        queryClient.invalidateQueries({ queryKey: [key] }),
+      ),
+    );
+};
+
+export const useCreateReview = () => {
+  const invalidate = useInvalidateReviews();
+  return useMutation({ mutationFn: createReview, onSuccess: invalidate });
+};
+
+export const useUpdateReview = () => {
+  const invalidate = useInvalidateReviews();
+  return useMutation({ mutationFn: updateReview, onSuccess: invalidate });
+};
+
+export const useDeleteReview = () => {
+  const invalidate = useInvalidateReviews();
+  return useMutation({ mutationFn: deleteReview, onSuccess: invalidate });
 };

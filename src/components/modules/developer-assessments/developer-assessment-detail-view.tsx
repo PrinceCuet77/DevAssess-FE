@@ -20,11 +20,12 @@ import {
 } from 'lucide-react';
 import AssessmentAttemptsTable from '@/components/modules/developer-assessments/assessment-attempts-table';
 import AssessmentReviewsPanel, { Stars } from '@/components/modules/developer-assessments/assessment-reviews-panel';
+import ReviewFormDialog from '@/components/modules/developer-reviews/review-form-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useGetAssessmentAttempts, useGetDeveloperAssessment, useGetOwnedAssessments } from '@/hooks';
+import { useGetAssessmentAttempts, useGetDeveloperAssessment, useGetMyProfile, useGetOwnedAssessments } from '@/hooks';
 import { cn } from '@/lib/utils';
 
 type Tab = 'overview' | 'attempts' | 'reviews';
@@ -75,6 +76,7 @@ const DeveloperAssessmentDetailView = ({ assessmentId }: { assessmentId: string 
   const assessmentQuery = useGetDeveloperAssessment(assessmentId);
   const owned = useGetOwnedAssessments();
   const attemptsQuery = useGetAssessmentAttempts(assessmentId);
+  const profile = useGetMyProfile();
 
   const { data: assessment, error, isPending, refetch } = assessmentQuery;
 
@@ -108,6 +110,10 @@ const DeveloperAssessmentDetailView = ({ assessmentId }: { assessmentId: string 
     ? assessment.reviews.reduce((sum, r) => sum + r.rating, 0) / assessment.reviews.length
     : null;
   const hasAttempted = attempts.length > 0;
+  // Reviews need an EVALUATED attempt, and only one active review is allowed per assessment.
+  const myId = profile.data?.id;
+  const hasReviewed = Boolean(myId) && assessment.reviews.some((r) => r.developer.id === myId);
+  const canReview = evaluated.length > 0 && Boolean(myId) && !hasReviewed;
 
   const tabs: { id: Tab; label: string; icon: LucideIcon }[] = [
     { id: 'overview', label: 'Overview', icon: Info },
@@ -249,6 +255,8 @@ const DeveloperAssessmentDetailView = ({ assessmentId }: { assessmentId: string 
                   {hasAttempted ? 'Retake assessment' : 'Start assessment'}
                 </Button>
               )}
+
+              {canReview && <ReviewFormDialog mode='create' assessmentId={assessment.id} assessmentTitle={assessment.title} />}
 
               <dl className='flex flex-col gap-4 border-t border-border/60 pt-5'>
                 <Fact icon={Clock} label='Time limit' value={formatDuration(assessment.duration)} />

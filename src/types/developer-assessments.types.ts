@@ -166,3 +166,27 @@ export type DeveloperReview = {
   };
   developer: { id: string; name: string | null; email: string };
 };
+
+export type CreateReviewPayload = {
+  assessmentId: string;
+  rating: number;
+  comment: string;
+};
+
+// Both optional on edit.
+export type UpdateReviewPayload = {
+  rating?: number;
+  comment?: string;
+};
+
+// `POST /reviews` and `PATCH /reviews/:id` return the raw review row, without the joined assessment.
+export type ReviewRow = {
+  id: string;
+  rating: number;
+  comment: string | null;
+  developerId: string;
+  assessmentId: string;
+  deletedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};

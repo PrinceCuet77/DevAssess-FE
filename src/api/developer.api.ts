@@ -12,6 +12,9 @@ import type {
   DeveloperPaymentsQuery,
   DeveloperReview,
   DeveloperReviewsQuery,
+  CreateReviewPayload,
+  UpdateReviewPayload,
+  ReviewRow,
 } from '@/types/developer-assessments.types';
 
 export const getDeveloperDashboard = () => {
@@ -79,4 +82,16 @@ export const getDeveloperReviewList = (query: DeveloperReviewsQuery) => {
 
 export const getDeveloperReview = (reviewId: string) => {
   return apiClient<ApiResponse<DeveloperReview>>(`/reviews/${reviewId}`);
+};
+
+export const createReview = (payload: CreateReviewPayload) => {
+  return apiClient<ApiResponse<ReviewRow>>('/reviews', { method: 'POST', body: payload });
+};
+
+export const updateReview = ({ reviewId, payload }: { reviewId: string; payload: UpdateReviewPayload }) => {
+  return apiClient<ApiResponse<ReviewRow>>(`/reviews/${reviewId}`, { method: 'PATCH', body: payload });
+};
+
+export const deleteReview = (reviewId: string) => {
+  return apiClient<ApiResponse<null>>(`/reviews/${reviewId}`, { method: 'DELETE' });
 };
