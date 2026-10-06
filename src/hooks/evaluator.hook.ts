@@ -5,6 +5,7 @@ import {
   getEvaluatorAssessments,
   getEvaluatorDashboard,
   getEvaluatorPurchases,
+  updateEvaluatorAssessment,
   updateEvaluatorAssessmentStatus,
   uploadAssessmentThumbnail,
 } from '@/api/evaluator.api';
@@ -46,7 +47,7 @@ export const useGetEvaluatorPurchases = (assessmentId?: string) => {
   });
 };
 
-// Status changes ripple into the list and the dashboard's status breakdown / top assessments.
+// Edits and status changes ripple into the list and the dashboard's status breakdown / top assessments.
 const useInvalidateEvaluatorAssessments = () => {
   const queryClient = useQueryClient();
   return () => {
@@ -54,6 +55,11 @@ const useInvalidateEvaluatorAssessments = () => {
     queryClient.invalidateQueries({ queryKey: ['evaluator-assessment'] });
     queryClient.invalidateQueries({ queryKey: ['evaluator-dashboard'] });
   };
+};
+
+export const useUpdateEvaluatorAssessment = () => {
+  const invalidate = useInvalidateEvaluatorAssessments();
+  return useMutation({ mutationFn: updateEvaluatorAssessment, onSuccess: invalidate });
 };
 
 export const useUpdateEvaluatorAssessmentStatus = () => {

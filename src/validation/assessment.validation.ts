@@ -36,7 +36,7 @@ export const questionSchema = z
     message: 'Options must be different from each other',
   });
 
-export const createAssessmentSchema = z.object({
+export const assessmentFormSchema = z.object({
   title: z.string().trim().min(3, 'Title must be at least 3 characters').max(150, 'Title must be at most 150 characters'),
   description: z.string().trim().max(2000, 'Description must be at most 2000 characters'),
   tags: z.array(z.string().trim().min(1)).max(MAX_TAGS, `You can add up to ${MAX_TAGS} tags`),
@@ -55,5 +55,5 @@ export const createAssessmentSchema = z.object({
   questions: z.array(questionSchema).min(1, 'Add at least one question'),
 });
 
-export type CreateAssessmentValues = z.infer<typeof createAssessmentSchema>;
+export type AssessmentFormValues = z.infer<typeof assessmentFormSchema>;
 export type QuestionValues = z.infer<typeof questionSchema>;

@@ -8,6 +8,7 @@ import type {
   EvaluatorPurchaseRow,
   EvaluatorSettableStatus,
   ThumbnailPresign,
+  UpdateAssessmentPayload,
 } from '@/types/evaluator-assessments.types';
 import type { EvaluatorDashboardData } from '@/types/evaluator-dashboard.types';
 
@@ -17,16 +18,39 @@ export const getEvaluatorDashboard = () => {
 
 // The API rejects empty strings (e.g. `search=`), so drop empty params up front.
 const compact = (query: EvaluatorAssessmentsQuery) =>
-  Object.fromEntries(Object.entries(query).filter(([, v]) => v !== undefined && v !== ''));
+  Object.fromEntries(
+    Object.entries(query).filter(([, v]) => v !== undefined && v !== ''),
+  );
 
 export const getEvaluatorAssessments = (query: EvaluatorAssessmentsQuery) => {
-  return apiClient<ApiResponse<EvaluatorAssessmentRow[]>>('/evaluator/assessments', {
-    query: compact(query),
-  });
+  return apiClient<ApiResponse<EvaluatorAssessmentRow[]>>(
+    '/evaluator/assessments',
+    {
+      query: compact(query),
+    },
+  );
 };
 
 export const getEvaluatorAssessment = (assessmentId: string) => {
-  return apiClient<ApiResponse<EvaluatorAssessmentDetail>>(`/evaluator/assessments/${assessmentId}`);
+  return apiClient<ApiResponse<EvaluatorAssessmentDetail>>(
+    `/evaluator/assessments/${assessmentId}`,
+  );
+};
+
+export const updateEvaluatorAssessment = ({
+  assessmentId,
+  payload,
+}: {
+  assessmentId: string;
+  payload: UpdateAssessmentPayload;
+}) => {
+  return apiClient<ApiResponse<EvaluatorAssessmentRow>>(
+    `/evaluator/assessments/${assessmentId}`,
+    {
+      method: 'PATCH',
+      body: payload,
+    },
+  );
 };
 
 export const updateEvaluatorAssessmentStatus = ({
@@ -35,31 +59,38 @@ export const updateEvaluatorAssessmentStatus = ({
 }: {
   assessmentId: string;
   status: EvaluatorSettableStatus;
-}) => {
-  return apiClient<ApiResponse<EvaluatorAssessmentRow>>(`/evaluator/assessments/${assessmentId}`, {
-    method: 'PATCH',
-    body: { status },
-  });
-};
+}) => updateEvaluatorAssessment({ assessmentId, payload: { status } });
 
 export const deleteEvaluatorAssessment = (assessmentId: string) => {
-  return apiClient<ApiResponse<null>>(`/evaluator/assessments/${assessmentId}`, {
-    method: 'DELETE',
-  });
+  return apiClient<ApiResponse<null>>(
+    `/evaluator/assessments/${assessmentId}`,
+    {
+      method: 'DELETE',
+    },
+  );
 };
 
 export const createEvaluatorAssessment = (payload: CreateAssessmentPayload) => {
-  return apiClient<ApiResponse<EvaluatorAssessmentRow>>('/evaluator/assessment', {
-    method: 'POST',
-    body: payload,
-  });
+  return apiClient<ApiResponse<EvaluatorAssessmentRow>>(
+    '/evaluator/assessment',
+    {
+      method: 'POST',
+      body: payload,
+    },
+  );
 };
 
-export const getThumbnailPresign = (payload: { fileName: string; fileType: string }) => {
-  return apiClient<ApiResponse<ThumbnailPresign>>('/evaluator/assessment/thumbnail/presign', {
-    method: 'POST',
-    body: payload,
-  });
+export const getThumbnailPresign = (payload: {
+  fileName: string;
+  fileType: string;
+}) => {
+  return apiClient<ApiResponse<ThumbnailPresign>>(
+    '/evaluator/assessment/thumbnail/presign',
+    {
+      method: 'POST',
+      body: payload,
+    },
+  );
 };
 
 // Goes straight to S3: no cookies, no auth header, and Content-Type must match the presigned fileType.
@@ -73,7 +104,10 @@ const uploadThumbnailToS3 = async (uploadUrl: string, file: File) => {
 };
 
 export const uploadAssessmentThumbnail = async (file: File) => {
-  const { data } = await getThumbnailPresign({ fileName: file.name, fileType: file.type });
+  const { data } = await getThumbnailPresign({
+    fileName: file.name,
+    fileType: file.type,
+  });
   await uploadThumbnailToS3(data.uploadUrl, file);
   return data;
 };
@@ -86,9 +120,16 @@ export const getEvaluatorPurchases = async (assessmentId?: string) => {
   let page = 1;
   let totalPages = 1;
   do {
-    const res = await apiClient<ApiResponse<EvaluatorPurchaseRow[]>>('/evaluator/purchases', {
-      query: { page, limit: PURCHASES_PAGE_SIZE, ...(assessmentId && { assessmentId }) },
-    });
+    const res = await apiClient<ApiResponse<EvaluatorPurchaseRow[]>>(
+      '/evaluator/purchases',
+      {
+        query: {
+          page,
+          limit: PURCHASES_PAGE_SIZE,
+          ...(assessmentId && { assessmentId }),
+        },
+      },
+    );
     rows.push(...res.data);
     totalPages = res.meta?.totalPages ?? 1;
     page += 1;

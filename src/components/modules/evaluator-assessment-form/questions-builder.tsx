@@ -2,7 +2,7 @@
 
 import { Plus } from 'lucide-react';
 import FieldError from '@/components/form/field-error';
-import QuestionCard from '@/components/modules/evaluator-assessment-create/question-card';
+import QuestionCard from '@/components/modules/evaluator-assessment-form/question-card';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { questionSchema, type QuestionValues } from '@/validation/assessment.validation';

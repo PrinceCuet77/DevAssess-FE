@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Archive, Loader2, Pencil, Rocket, Trash2 } from 'lucide-react';
+import { Archive, FileEdit, Loader2, Pencil, Rocket, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -59,13 +59,23 @@ const EvaluatorAssessmentActions = ({ assessment }: { assessment: EvaluatorAsses
         <Pencil /> Edit
       </Button>
       {assessment.status === 'PUBLISHED' ? (
-        <Button
-          variant='outline'
-          disabled={updateStatus.isPending}
-          onClick={() => changeStatus('ARCHIVED', 'Assessment archived.')}
-        >
-          {updateStatus.isPending ? <Loader2 className='animate-spin' /> : <Archive />} Archive
-        </Button>
+        <>
+          <Button
+            variant='outline'
+            disabled={updateStatus.isPending}
+            onClick={() => changeStatus('DRAFT', 'Assessment moved to draft.')}
+          >
+            {updateStatus.isPending ? <Loader2 className='animate-spin' /> : <FileEdit />} Move to
+            draft
+          </Button>
+          <Button
+            variant='outline'
+            disabled={updateStatus.isPending}
+            onClick={() => changeStatus('ARCHIVED', 'Assessment archived.')}
+          >
+            {updateStatus.isPending ? <Loader2 className='animate-spin' /> : <Archive />} Archive
+          </Button>
+        </>
       ) : (
         <Button
           disabled={updateStatus.isPending}

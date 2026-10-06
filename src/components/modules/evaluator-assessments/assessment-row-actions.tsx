@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Archive, Eye, Loader2, MoreHorizontal, Pencil, Rocket, Trash2 } from 'lucide-react';
+import { Archive, Eye, FileEdit, Loader2, MoreHorizontal, Pencil, Rocket, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -99,9 +99,14 @@ const AssessmentRowActions = ({ assessment }: { assessment: EvaluatorAssessmentR
             </DropdownMenuItem>
           )}
           {assessment.status === 'PUBLISHED' && (
-            <DropdownMenuItem onClick={() => changeStatus('ARCHIVED', 'Assessment archived.')}>
-              <Archive /> Archive
-            </DropdownMenuItem>
+            <>
+              <DropdownMenuItem onClick={() => changeStatus('DRAFT', 'Assessment moved to draft.')}>
+                <FileEdit /> Move to draft
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => changeStatus('ARCHIVED', 'Assessment archived.')}>
+                <Archive /> Archive
+              </DropdownMenuItem>
+            </>
           )}
           <DropdownMenuSeparator />
           <DropdownMenuItem variant='destructive' onClick={() => setConfirmOpen(true)}>

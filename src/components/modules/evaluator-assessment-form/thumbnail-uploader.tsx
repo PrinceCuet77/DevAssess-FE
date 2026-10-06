@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { ImagePlus, Loader2, Trash2 } from 'lucide-react';
+import { ImagePlus, Loader2, RotateCcw, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { useUploadAssessmentThumbnail } from '@/hooks';
@@ -12,11 +12,13 @@ type ThumbnailUploaderProps = {
   // Key returned by presign, '' when no thumbnail is set.
   value: string;
   onChange: (key: string) => void;
+  // Already-saved image (edit mode). The API can replace it but not remove it.
+  currentUrl?: string | null;
   disabled?: boolean;
 };
 
 // Uploads right after picking: the presigned URL is short-lived, so don't hold it until submit.
-const ThumbnailUploader = ({ value, onChange, disabled }: ThumbnailUploaderProps) => {
+const ThumbnailUploader = ({ value, onChange, currentUrl, disabled }: ThumbnailUploaderProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { mutate: upload, isPending } = useUploadAssessmentThumbnail();
@@ -40,7 +42,8 @@ const ThumbnailUploader = ({ value, onChange, disabled }: ThumbnailUploaderProps
     });
   };
 
-  const hasImage = Boolean(value && previewUrl);
+  const hasUpload = Boolean(value && previewUrl);
+  const shownUrl = hasUpload ? previewUrl : (currentUrl ?? null);
 
   return (
     <div className='flex flex-col gap-3'>
@@ -59,11 +62,21 @@ const ThumbnailUploader = ({ value, onChange, disabled }: ThumbnailUploaderProps
         type='button'
         disabled={disabled || isPending}
         onClick={() => inputRef.current?.click()}
-        className='relative flex aspect-video w-full max-w-md items-center justify-center overflow-hidden rounded-lg border border-dashed border-input bg-muted/30 text-sm text-muted-foreground transition-colors hover:bg-muted/60 disabled:pointer-events-none disabled:opacity-60'
+        className='group relative flex aspect-video w-full max-w-md items-center justify-center overflow-hidden rounded-lg border border-dashed border-input bg-muted/30 text-sm text-muted-foreground transition-colors hover:bg-muted/60 disabled:pointer-events-none disabled:opacity-60'
       >
-        {hasImage ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={previewUrl!} alt='Thumbnail preview' className='size-full object-cover' />
+        {shownUrl ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element -- presigned/remote URLs, no configured image domains */}
+            <img src={shownUrl} alt='Thumbnail preview' className='size-full object-cover' />
+            <span className='absolute inset-x-0 bottom-0 bg-background/80 py-1.5 text-xs font-medium text-foreground opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100'>
+              Click to replace
+            </span>
+            {hasUpload && currentUrl && (
+              <span className='absolute top-2 left-2 rounded-md bg-primary px-2 py-0.5 text-xs font-medium text-primary-foreground'>
+                New · saved on submit
+              </span>
+            )}
+          </>
         ) : (
           <span className='flex flex-col items-center gap-2'>
             <ImagePlus className='size-8' />
@@ -77,22 +90,25 @@ const ThumbnailUploader = ({ value, onChange, disabled }: ThumbnailUploaderProps
         )}
       </button>
       <div className='flex items-center gap-3'>
-        {hasImage && (
+        {hasUpload && (
           <Button
             type='button'
             variant='ghost'
-            className='text-destructive hover:text-destructive'
+            className={currentUrl ? undefined : 'text-destructive hover:text-destructive'}
             disabled={disabled || isPending}
             onClick={() => {
               setPreviewUrl(null);
               onChange('');
             }}
           >
-            <Trash2 />
-            Remove
+            {currentUrl ? <RotateCcw /> : <Trash2 />}
+            {currentUrl ? 'Keep current image' : 'Remove'}
           </Button>
         )}
-        <p className='text-xs text-muted-foreground'>16:9 works best · JPG, PNG or WebP · max 2 MB</p>
+        <p className='text-xs text-muted-foreground'>
+          16:9 works best · JPG, PNG or WebP · max 2 MB
+          {currentUrl && ' · a saved image can be replaced, not removed'}
+        </p>
       </div>
     </div>
   );

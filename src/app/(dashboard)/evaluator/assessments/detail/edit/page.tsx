@@ -2,25 +2,18 @@
 
 import { Suspense } from 'react';
 import { notFound, useSearchParams } from 'next/navigation';
-import PlaceholderPage from '@/components/shared/placeholder-page';
+import EditAssessmentView from '@/components/modules/evaluator-assessment-form/edit-assessment-view';
 
-const Content = () => {
+const EditAssessment = () => {
   const id = useSearchParams().get('id');
   if (!id) notFound();
 
-  return (
-    <PlaceholderPage
-      title='Edit assessment'
-      description='Update, publish or archive this assessment.'
-      api='PATCH /evaluator/assessments/:id'
-      resourceId={id}
-    />
-  );
+  return <EditAssessmentView assessmentId={id} />;
 };
 
 const EvaluatorAssessmentsDetailEditPage = () => (
   <Suspense>
-    <Content />
+    <EditAssessment />
   </Suspense>
 );
 

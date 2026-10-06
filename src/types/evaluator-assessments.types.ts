@@ -105,6 +105,14 @@ export type CreateAssessmentPayload = {
   answer: EvaluatorAnswerKey[];
 };
 
+// PATCH is a partial update. `questions` and `answer` must travel together (the API rejects one alone),
+// and `thumbnailKey` can only replace the image — there is no way to remove it.
+export type UpdateAssessmentPayload = Partial<Omit<CreateAssessmentPayload, 'questions' | 'answer'>> &
+  (
+    | { questions: CreateAssessmentPayload['questions']; answer: CreateAssessmentPayload['answer'] }
+    | { questions?: never; answer?: never }
+  ) & { status?: EvaluatorSettableStatus };
+
 export type ThumbnailPresign = {
   uploadUrl: string;
   key: string;

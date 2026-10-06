@@ -2,23 +2,14 @@
 
 import { ArrowDown, ArrowUp, Plus, Trash2, X } from 'lucide-react';
 import FieldError from '@/components/form/field-error';
-import Field from '@/components/modules/evaluator-assessment-create/field';
+import { optionIdAt } from '@/components/modules/evaluator-assessment-form/assessment-mappers';
+import Field from '@/components/modules/evaluator-assessment-form/field';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { MAX_OPTIONS, MIN_OPTIONS, type QuestionValues } from '@/validation/assessment.validation';
-
-// Option ids are a, b, c… and never reused within a question, even after removing one.
-const nextOptionId = (options: QuestionValues['options']) => {
-  const used = new Set(options.map((o) => o.id));
-  for (let code = 97; code < 123; code += 1) {
-    const id = String.fromCharCode(code);
-    if (!used.has(id)) return id;
-  }
-  return crypto.randomUUID();
-};
 
 type QuestionCardProps = {
   index: number;
@@ -53,12 +44,17 @@ const QuestionCard = ({
       options: question.options.map((o) => (o.id === optionId ? { ...o, text } : o)),
     });
 
-  const removeOption = (optionId: string) =>
+  // Re-letter the remaining options so they stay contiguous, carrying the correct answer along with its option.
+  const removeOption = (optionId: string) => {
+    const remaining = question.options.filter((o) => o.id !== optionId);
+    const options = remaining.map((o, i) => ({ ...o, id: optionIdAt(i) }));
+    const correctIndex = remaining.findIndex((o) => o.id === question.correctOptionId);
     onChange({
       ...question,
-      options: question.options.filter((o) => o.id !== optionId),
-      correctOptionId: question.correctOptionId === optionId ? '' : question.correctOptionId,
+      options,
+      correctOptionId: correctIndex === -1 ? '' : options[correctIndex].id,
     });
+  };
 
   return (
     <Card>
@@ -148,7 +144,7 @@ const QuestionCard = ({
                     className='size-4 accent-primary'
                     onChange={() => onChange({ ...question, correctOptionId: option.id })}
                   />
-                  <span className='w-4 text-sm font-medium text-muted-foreground uppercase'>{option.id.slice(0, 1)}</span>
+                  <span className='w-4 text-sm font-medium text-muted-foreground uppercase'>{option.id}</span>
                   <Input
                     value={option.text}
                     placeholder={`Option ${optionIndex + 1}`}
@@ -180,7 +176,7 @@ const QuestionCard = ({
             className='self-start'
             disabled={disabled || question.options.length >= MAX_OPTIONS}
             onClick={() =>
-              onChange({ ...question, options: [...question.options, { id: nextOptionId(question.options), text: '' }] })
+              onChange({ ...question, options: [...question.options, { id: optionIdAt(question.options.length), text: '' }] })
             }
           >
             <Plus />
