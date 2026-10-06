@@ -24,7 +24,10 @@ export default function AppSidebar() {
   const dashboardHref = roleItems[0]?.href;
 
   // Most specific match wins, so /developer/assessments/new doesn't also highlight /developer/assessments.
-  const activeHref = [...roleItems]
+  // With "Browse assessments" gone from the developer nav, their owned-assessment pages live under /developer/assessments.
+  const activeHref = pathname.startsWith('/developer/assessments/')
+    ? '/developer/my-assessments'
+    : [...roleItems]
     .filter(({ href }) =>
       href === dashboardHref ? pathname === href : pathname === href || pathname.startsWith(`${href}/`),
     )

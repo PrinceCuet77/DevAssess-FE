@@ -9,7 +9,6 @@ import {
   ReceiptText,
   ShoppingBag,
   Star,
-  Store,
   UserRound,
   Users,
   type LucideIcon,
@@ -33,7 +32,6 @@ export interface INavItem {
 export const ROLE_NAV_ITEMS: Record<Role, INavItem[]> = {
   DEVELOPER: [
     { title: 'Dashboard', href: '/developer', icon: LayoutDashboard },
-    { title: 'Browse assessments', href: '/developer/assessments', icon: Store },
     { title: 'My assessments', href: '/developer/my-assessments', icon: BookOpenCheck },
     { title: 'Purchases', href: '/developer/purchases', icon: ShoppingBag },
     { title: 'Payments', href: '/developer/payments', icon: CreditCard },

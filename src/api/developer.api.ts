@@ -1,7 +1,40 @@
 import apiClient from '@/lib/apiClient';
 import type { ApiResponse } from '@/types/api.types';
 import type { DeveloperDashboard } from '@/types/developer-dashboard.types';
+import type {
+  AssessmentAttempts,
+  DeveloperAssessmentDetail,
+  DeveloperPurchase,
+} from '@/types/developer-assessments.types';
 
 export const getDeveloperDashboard = () => {
   return apiClient<ApiResponse<DeveloperDashboard>>('/developer/dashboard');
+};
+
+const PURCHASES_PAGE_SIZE = 100;
+
+// There is no "owned assessments" endpoint: page through every paid order and let the caller flatten it.
+export const getPaidPurchases = async () => {
+  const rows: DeveloperPurchase[] = [];
+  let page = 1;
+  let totalPages = 1;
+  do {
+    const res = await apiClient<ApiResponse<DeveloperPurchase[]>>('/purchases', {
+      query: { paymentStatus: 'SUCCESS', page, limit: PURCHASES_PAGE_SIZE },
+    });
+    rows.push(...res.data);
+    totalPages = res.meta?.totalPages ?? 1;
+    page += 1;
+  } while (page <= totalPages);
+  return rows;
+};
+
+export const getDeveloperAssessment = (assessmentId: string) => {
+  return apiClient<ApiResponse<DeveloperAssessmentDetail>>(`/assessments/${assessmentId}`);
+};
+
+export const getAssessmentAttempts = (assessmentId: string) => {
+  return apiClient<ApiResponse<AssessmentAttempts>>(`/developer/assessments/${assessmentId}/attempts`, {
+    query: { sortBy: 'createdAt', sortOrder: 'desc', limit: 100 },
+  });
 };

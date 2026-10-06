@@ -2,19 +2,17 @@
 
 import { Suspense } from 'react';
 import { notFound, useSearchParams } from 'next/navigation';
-import PlaceholderPage from '@/components/shared/placeholder-page';
+import PageContainer from '@/components/layout/dashboard/page-container';
+import DeveloperAssessmentDetailView from '@/components/modules/developer-assessments/developer-assessment-detail-view';
 
 const Content = () => {
   const id = useSearchParams().get('id');
   if (!id) notFound();
 
   return (
-    <PlaceholderPage
-      title='Assessment details'
-      description='Review the assessment details and reviews before buying.'
-      api='GET /assessments/:id'
-      resourceId={id}
-    />
+    <PageContainer>
+      <DeveloperAssessmentDetailView assessmentId={id} />
+    </PageContainer>
   );
 };
 
