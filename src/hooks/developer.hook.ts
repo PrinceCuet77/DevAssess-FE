@@ -8,12 +8,15 @@ import {
   getDeveloperPaymentList,
   getDeveloperPayment,
   getDeveloperPurchase,
+  getDeveloperReviewList,
+  getDeveloperReview,
 } from '@/api/developer.api';
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
 import type {
   DeveloperPaymentsQuery,
   DeveloperPurchase,
   DeveloperPurchasesQuery,
+  DeveloperReviewsQuery,
   OwnedAssessment,
 } from '@/types/developer-assessments.types';
 
@@ -107,6 +110,26 @@ export const useGetDeveloperPurchase = (purchaseId: string) => {
     queryKey: ['developer-purchase', purchaseId],
     queryFn: () => getDeveloperPurchase(purchaseId),
     select: (response) => response.data,
+    retry: false,
+  });
+};
+
+export const useGetDeveloperReviewList = (query: DeveloperReviewsQuery) => {
+  return useQuery({
+    queryKey: ['developer-review-list', query],
+    queryFn: () => getDeveloperReviewList(query),
+    placeholderData: keepPreviousData,
+    retry: false,
+  });
+};
+
+// Only fetched while the review modal is open (`enabled`), so closed cards cost nothing.
+export const useGetDeveloperReview = (reviewId: string, enabled = true) => {
+  return useQuery({
+    queryKey: ['developer-review', reviewId],
+    queryFn: () => getDeveloperReview(reviewId),
+    select: (response) => response.data,
+    enabled,
     retry: false,
   });
 };

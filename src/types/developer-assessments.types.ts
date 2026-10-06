@@ -140,3 +140,29 @@ export type DeveloperPaymentsQuery = {
   page?: number;
   limit?: number;
 };
+
+export type DeveloperReviewsQuery = {
+  search?: string;
+  sortBy?: 'createdAt' | 'rating';
+  sortOrder?: 'asc' | 'desc';
+  page?: number;
+  limit?: number;
+};
+
+// `GET /reviews` — the developer's own reviews, each with the assessment it belongs to.
+export type DeveloperReview = {
+  id: string;
+  rating: number;
+  comment: string | null;
+  createdAt: string;
+  updatedAt: string;
+  assessment: {
+    id: string;
+    title: string;
+    description: string;
+    thumbnailUrl: string | null;
+    price: string;
+    duration: number;
+  };
+  developer: { id: string; name: string | null; email: string };
+};

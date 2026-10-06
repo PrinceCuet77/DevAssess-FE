@@ -10,6 +10,8 @@ import type {
   DeveloperPayment,
   DeveloperPaymentDetail,
   DeveloperPaymentsQuery,
+  DeveloperReview,
+  DeveloperReviewsQuery,
 } from '@/types/developer-assessments.types';
 
 export const getDeveloperDashboard = () => {
@@ -69,4 +71,12 @@ export const getDeveloperPayment = (paymentId: string) => {
 
 export const getDeveloperPurchase = (purchaseId: string) => {
   return apiClient<ApiResponse<DeveloperPurchase>>(`/purchases/${purchaseId}`);
+};
+
+export const getDeveloperReviewList = (query: DeveloperReviewsQuery) => {
+  return apiClient<ApiResponse<DeveloperReview[]>>('/reviews', { query: compact(query) });
+};
+
+export const getDeveloperReview = (reviewId: string) => {
+  return apiClient<ApiResponse<DeveloperReview>>(`/reviews/${reviewId}`);
 };
