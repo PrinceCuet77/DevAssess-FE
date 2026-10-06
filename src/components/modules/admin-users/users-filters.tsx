@@ -5,6 +5,7 @@ import { Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { AdminDashboardStats } from '@/types/admin-dashboard.types';
 import { Input } from '@/components/ui/input';
+import ClearFiltersButton from '@/components/shared/clear-filters-button';
 import type { AdminUsersQuery } from '@/types/admin-users.types';
 
 const SELECT_CLASS =
@@ -51,6 +52,9 @@ const UsersFilters = ({ query, onChange, counts }: IProps) => {
     const timer = setTimeout(() => onChange({ search: trimmed || undefined }), 400);
     return () => clearTimeout(timer);
   }, [search, query.search, onChange]);
+
+  const hasActiveFilters = Boolean(query.role || query.status || query.search || query.sortBy || query.sortOrder);
+  const clearAll = () => onChange({ role: undefined, status: undefined, search: undefined, sortBy: undefined, sortOrder: undefined });
 
   return (
     <div className='flex flex-col gap-3'>
@@ -129,6 +133,7 @@ const UsersFilters = ({ query, onChange, counts }: IProps) => {
           </option>
         ))}
       </select>
+      <ClearFiltersButton active={hasActiveFilters} onClear={clearAll} />
       </div>
     </div>
   );

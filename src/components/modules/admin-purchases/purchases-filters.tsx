@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import ClearFiltersButton from '@/components/shared/clear-filters-button';
 import { cn } from '@/lib/utils';
 import type { AdminPurchasesQuery } from '@/types/admin-purchases.types';
 
@@ -46,6 +47,16 @@ const PurchasesFilters = ({ query, onChange }: IProps) => {
     const timer = setTimeout(() => onChange({ search: trimmed || undefined }), 400);
     return () => clearTimeout(timer);
   }, [search, query.search, onChange]);
+
+  const hasActiveFilters = Boolean(
+    query.paymentStatus ||
+      query.search ||
+      query.customerId ||
+      query.assessmentId ||
+      query.sortBy ||
+      query.sortOrder,
+  );
+  const clearAll = () => onChange({ paymentStatus: undefined, search: undefined, customerId: undefined, assessmentId: undefined, sortBy: undefined, sortOrder: undefined });
 
   return (
     <div className='flex flex-col gap-3'>
@@ -104,6 +115,7 @@ const PurchasesFilters = ({ query, onChange }: IProps) => {
             </option>
           ))}
         </select>
+        <ClearFiltersButton active={hasActiveFilters} onClear={clearAll} />
       </div>
       {(query.customerId || query.assessmentId) && (
         <div className='flex flex-wrap items-center gap-2 text-xs'>

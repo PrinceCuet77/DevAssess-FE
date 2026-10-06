@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import ClearFiltersButton from '@/components/shared/clear-filters-button';
 import { cn } from '@/lib/utils';
 import type { EvaluatorDashboardStats } from '@/types/evaluator-dashboard.types';
 import type { EvaluatorAssessmentsQuery } from '@/types/evaluator-assessments.types';
@@ -61,6 +62,16 @@ const AssessmentsFilters = ({ query, onChange, stats }: IProps) => {
     // `totalAssessments` includes deleted ones, which "All" hides.
     return stats.totalAssessments - (by.DELETED ?? 0);
   };
+
+  const hasActiveFilters = Boolean(
+    query.status ||
+      query.search ||
+      query.minPrice !== undefined ||
+      query.maxPrice !== undefined ||
+      query.sortBy ||
+      query.sortOrder,
+  );
+  const clearAll = () => onChange({ status: undefined, search: undefined, minPrice: undefined, maxPrice: undefined, sortBy: undefined, sortOrder: undefined });
 
   return (
     <div className='flex flex-col gap-3'>
@@ -136,6 +147,7 @@ const AssessmentsFilters = ({ query, onChange, stats }: IProps) => {
             </option>
           ))}
         </select>
+        <ClearFiltersButton active={hasActiveFilters} onClear={clearAll} />
       </div>
     </div>
   );

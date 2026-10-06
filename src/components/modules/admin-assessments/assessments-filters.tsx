@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import ClearFiltersButton from '@/components/shared/clear-filters-button';
 import { cn } from '@/lib/utils';
 import type { AdminDashboardStats } from '@/types/admin-dashboard.types';
 import type { AdminAssessmentsQuery } from '@/types/admin-assessments.types';
@@ -53,6 +54,9 @@ const AssessmentsFilters = ({ query, onChange, counts }: IProps) => {
   const tags = query.tags?.split(',').filter(Boolean) ?? [];
   const removeTag = (tag: string) =>
     onChange({ tags: tags.filter((t) => t !== tag).join(',') || undefined });
+
+  const hasActiveFilters = Boolean(query.status || query.search || query.tags || query.creatorId || query.sortBy || query.sortOrder);
+  const clearAll = () => onChange({ status: undefined, search: undefined, tags: undefined, creatorId: undefined, sortBy: undefined, sortOrder: undefined });
 
   return (
     <div className='flex flex-col gap-3'>
@@ -117,6 +121,7 @@ const AssessmentsFilters = ({ query, onChange, counts }: IProps) => {
             </option>
           ))}
         </select>
+        <ClearFiltersButton active={hasActiveFilters} onClear={clearAll} />
       </div>
       {(tags.length > 0 || query.creatorId) && (
         <div className='flex flex-wrap items-center gap-2 text-xs'>

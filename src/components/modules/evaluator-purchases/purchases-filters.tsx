@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import ClearFiltersButton from '@/components/shared/clear-filters-button';
 import { useGetEvaluatorAssessments } from '@/hooks';
 import { cn } from '@/lib/utils';
 import type { EvaluatorPurchasesQuery } from '@/types/evaluator-purchases.types';
@@ -57,6 +58,16 @@ const PurchasesFilters = ({ query, onChange }: IProps) => {
   // A deep link may point at an assessment that isn't among the loaded options.
   const unknownAssessment =
     query.assessmentId && !options.some((a) => a.id === query.assessmentId);
+
+  const hasActiveFilters = Boolean(
+    query.paymentStatus ||
+      query.search ||
+      query.customerId ||
+      query.assessmentId ||
+      query.sortBy ||
+      query.sortOrder,
+  );
+  const clearAll = () => onChange({ paymentStatus: undefined, search: undefined, customerId: undefined, assessmentId: undefined, sortBy: undefined, sortOrder: undefined });
 
   return (
     <div className='flex flex-col gap-3'>
@@ -130,6 +141,7 @@ const PurchasesFilters = ({ query, onChange }: IProps) => {
             </option>
           ))}
         </select>
+        <ClearFiltersButton active={hasActiveFilters} onClear={clearAll} />
       </div>
       {query.customerId && (
         <div className='flex flex-wrap items-center gap-2 text-xs'>
