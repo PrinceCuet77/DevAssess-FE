@@ -1,4 +1,7 @@
 import { Star } from 'lucide-react';
+import DeleteReviewDialog from '@/components/modules/developer-reviews/delete-review-dialog';
+import ReviewFormDialog from '@/components/modules/developer-reviews/review-form-dialog';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import type { AssessmentReview } from '@/types/developer-assessments.types';
@@ -21,7 +24,17 @@ export const Stars = ({ rating, className }: { rating: number; className?: strin
 // Reviewer emails come back from the API; never show them publicly.
 const reviewerName = (r: AssessmentReview) => r.developer.name ?? 'Anonymous';
 
-const AssessmentReviewsPanel = ({ reviews }: { reviews: AssessmentReview[] }) => {
+type PanelProps = {
+  reviews: AssessmentReview[];
+  assessmentId: string;
+  assessmentTitle: string;
+  myId?: string;
+  canReview?: boolean;
+};
+
+const AssessmentReviewsPanel = ({ reviews: all, assessmentId, assessmentTitle, myId, canReview }: PanelProps) => {
+  // Pin the viewer's own review to the top.
+  const reviews = [...all].sort((a, b) => Number(b.developer.id === myId) - Number(a.developer.id === myId));
   const average = reviews.length ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0;
   const counts = [5, 4, 3, 2, 1].map((star) => ({ star, count: reviews.filter((r) => r.rating === star).length }));
 
@@ -31,6 +44,12 @@ const AssessmentReviewsPanel = ({ reviews }: { reviews: AssessmentReview[] }) =>
         <CardTitle>Reviews ({reviews.length})</CardTitle>
       </CardHeader>
       <CardContent className='flex flex-col gap-6'>
+        {canReview && (
+          <div className='flex items-center justify-between gap-3 rounded-lg border border-dashed p-3'>
+            <p className='text-sm text-muted-foreground'>You&apos;ve completed this assessment. Share your feedback.</p>
+            <ReviewFormDialog mode='create' assessmentId={assessmentId} assessmentTitle={assessmentTitle} />
+          </div>
+        )}
         {reviews.length === 0 ? (
           <p className='py-4 text-center text-sm text-muted-foreground'>
             No reviews yet. Finish an attempt to be the first to leave one.
@@ -56,15 +75,39 @@ const AssessmentReviewsPanel = ({ reviews }: { reviews: AssessmentReview[] }) =>
               </ul>
             </div>
             <ul className='divide-y divide-border/60 border-t border-border/60'>
-              {reviews.map((r) => (
-                <li key={r.id} className='flex flex-col gap-1.5 py-4 last:pb-0'>
-                  <div className='flex items-center justify-between gap-3'>
-                    <span className='text-sm font-medium'>{reviewerName(r)}</span>
-                    <Stars rating={r.rating} />
-                  </div>
-                  {r.comment && <p className='text-sm text-muted-foreground'>{r.comment}</p>}
-                </li>
-              ))}
+              {reviews.map((r) => {
+                const mine = Boolean(myId) && r.developer.id === myId;
+                return (
+                  <li
+                    key={r.id}
+                    className={cn(
+                      'flex flex-col gap-1.5 py-4 last:pb-0',
+                      mine && 'my-2 rounded-lg border border-primary/40 bg-primary/5 px-4 last:pb-4',
+                    )}
+                  >
+                    <div className='flex items-center justify-between gap-3'>
+                      <span className='flex items-center gap-2 text-sm font-medium'>
+                        {reviewerName(r)}
+                        {mine && <Badge variant='secondary'>Your review</Badge>}
+                      </span>
+                      <Stars rating={r.rating} />
+                    </div>
+                    {r.comment && <p className='text-sm text-muted-foreground'>{r.comment}</p>}
+                    {mine && (
+                      <div className='flex items-center gap-1 pt-1'>
+                        <ReviewFormDialog
+                          mode='edit'
+                          reviewId={r.id}
+                          assessmentTitle={assessmentTitle}
+                          rating={r.rating}
+                          comment={r.comment}
+                        />
+                        <DeleteReviewDialog reviewId={r.id} assessmentTitle={assessmentTitle} />
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </>
         )}

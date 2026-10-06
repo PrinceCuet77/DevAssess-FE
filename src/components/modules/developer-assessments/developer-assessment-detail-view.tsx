@@ -217,7 +217,15 @@ const DeveloperAssessmentDetailView = ({ assessmentId }: { assessmentId: string 
               ) : (
                 <AssessmentAttemptsTable attempts={attempts} />
               ))}
-            {tab === 'reviews' && <AssessmentReviewsPanel reviews={assessment.reviews} />}
+            {tab === 'reviews' && (
+              <AssessmentReviewsPanel
+                reviews={assessment.reviews}
+                assessmentId={assessment.id}
+                assessmentTitle={assessment.title}
+                myId={myId}
+                canReview={canReview}
+              />
+            )}
           </div>
         </div>
 
