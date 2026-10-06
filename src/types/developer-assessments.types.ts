@@ -98,3 +98,45 @@ export type CreatePaymentResult = {
   gatewayPageURL: string;
   transactionId: string;
 };
+
+export type DeveloperPaymentAssessment = {
+  id: string;
+  title: string;
+  thumbnailUrl: string | null;
+  price: string;
+};
+
+export type DeveloperPayment = {
+  id: string;
+  transactionId: string;
+  valId: string | null;
+  amount: string;
+  currency: string;
+  status: PaymentStatus;
+  method: string | null;
+  paidAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  purchase: {
+    id: string;
+    price: string;
+    assessments: DeveloperPaymentAssessment[];
+  };
+};
+
+export type DeveloperPaymentDetail = DeveloperPayment & {
+  purchase: DeveloperPayment['purchase'] & {
+    customerId: string;
+    createdAt: string;
+    updatedAt: string;
+    customer: { id: string; name: string | null; email: string };
+  };
+};
+
+export type DeveloperPaymentsQuery = {
+  status?: PaymentStatus;
+  sortBy?: 'createdAt' | 'amount' | 'paidAt';
+  sortOrder?: 'asc' | 'desc';
+  page?: number;
+  limit?: number;
+};

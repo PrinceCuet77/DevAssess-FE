@@ -7,6 +7,9 @@ import type {
   DeveloperPurchasesQuery,
   DeveloperAssessmentDetail,
   DeveloperPurchase,
+  DeveloperPayment,
+  DeveloperPaymentDetail,
+  DeveloperPaymentsQuery,
 } from '@/types/developer-assessments.types';
 
 export const getDeveloperDashboard = () => {
@@ -54,4 +57,16 @@ export const createPayment = (purchaseId: string) => {
     method: 'POST',
     body: { purchaseId },
   });
+};
+
+export const getDeveloperPaymentList = (query: DeveloperPaymentsQuery) => {
+  return apiClient<ApiResponse<DeveloperPayment[]>>('/payments', { query: compact(query) });
+};
+
+export const getDeveloperPayment = (paymentId: string) => {
+  return apiClient<ApiResponse<DeveloperPaymentDetail>>(`/payments/${paymentId}`);
+};
+
+export const getDeveloperPurchase = (purchaseId: string) => {
+  return apiClient<ApiResponse<DeveloperPurchase>>(`/purchases/${purchaseId}`);
 };

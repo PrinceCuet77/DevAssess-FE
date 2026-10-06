@@ -2,19 +2,17 @@
 
 import { Suspense } from 'react';
 import { notFound, useSearchParams } from 'next/navigation';
-import PlaceholderPage from '@/components/shared/placeholder-page';
+import PageContainer from '@/components/layout/dashboard/page-container';
+import PaymentDetailView from '@/components/modules/developer-payments/payment-detail-view';
 
 const Content = () => {
   const id = useSearchParams().get('id');
   if (!id) notFound();
 
   return (
-    <PlaceholderPage
-      title='Payment details'
-      description='Details for this payment.'
-      api='GET /payments/:id'
-      resourceId={id}
-    />
+    <PageContainer>
+      <PaymentDetailView paymentId={id} />
+    </PageContainer>
   );
 };
 

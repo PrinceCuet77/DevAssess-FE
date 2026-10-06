@@ -5,9 +5,13 @@ import {
   getDeveloperDashboard,
   getDeveloperPurchaseList,
   getPaidPurchases,
+  getDeveloperPaymentList,
+  getDeveloperPayment,
+  getDeveloperPurchase,
 } from '@/api/developer.api';
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
 import type {
+  DeveloperPaymentsQuery,
   DeveloperPurchase,
   DeveloperPurchasesQuery,
   OwnedAssessment,
@@ -77,4 +81,32 @@ export const useGetDeveloperPurchaseList = (query: DeveloperPurchasesQuery) => {
 
 export const useCreatePayment = () => {
   return useMutation({ mutationFn: createPayment });
+};
+
+export const useGetDeveloperPaymentList = (query: DeveloperPaymentsQuery) => {
+  return useQuery({
+    queryKey: ['developer-payment-list', query],
+    queryFn: () => getDeveloperPaymentList(query),
+    placeholderData: keepPreviousData,
+    retry: false,
+  });
+};
+
+export const useGetDeveloperPayment = (paymentId: string) => {
+  return useQuery({
+    queryKey: ['developer-payment', paymentId],
+    queryFn: () => getDeveloperPayment(paymentId),
+    select: (response) => response.data,
+    retry: false,
+  });
+};
+
+// Used by the gateway return screen: the query string is never proof of payment, so re-read the order.
+export const useGetDeveloperPurchase = (purchaseId: string) => {
+  return useQuery({
+    queryKey: ['developer-purchase', purchaseId],
+    queryFn: () => getDeveloperPurchase(purchaseId),
+    select: (response) => response.data,
+    retry: false,
+  });
 };
