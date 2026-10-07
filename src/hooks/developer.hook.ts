@@ -48,12 +48,14 @@ const toOwnedAssessments = (purchases: DeveloperPurchase[]): OwnedAssessment[] =
   return [...owned.values()];
 };
 
-export const useGetOwnedAssessments = () => {
+// `enabled` lets public pages skip this until they know the viewer is a developer.
+export const useGetOwnedAssessments = (enabled = true) => {
   return useQuery({
     queryKey: ['developer-owned-assessments'],
     queryFn: getPaidPurchases,
     select: toOwnedAssessments,
     staleTime: 60_000,
+    enabled,
     retry: false,
   });
 };
@@ -137,13 +139,23 @@ export const useGetDeveloperReview = (reviewId: string, enabled = true) => {
   });
 };
 
-// Reviews show up in the "my reviews" list, the single-review modal and the embedded
-// `reviews` array of every assessment, so refresh all of them after a write.
+// Reviews show up in the "my reviews" list, the single-review modal, the embedded
+// `reviews` array of every assessment and the public catalog, so refresh all of them after a write.
+const REVIEW_QUERY_KEYS = [
+  'developer-review-list',
+  'developer-review',
+  'developer-assessment',
+  'developer-dashboard',
+  'assessment-list',
+  'assessment',
+  'assessment-reviews',
+];
+
 const useInvalidateReviews = () => {
   const queryClient = useQueryClient();
   return () =>
     Promise.all(
-      ['developer-review-list', 'developer-review', 'developer-assessment', 'developer-dashboard'].map((key) =>
+      REVIEW_QUERY_KEYS.map((key) =>
         queryClient.invalidateQueries({ queryKey: [key] }),
       ),
     );

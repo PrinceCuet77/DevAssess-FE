@@ -12,8 +12,12 @@ import { useGetMyProfile } from '@/hooks';
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
+  { href: '/assessments', label: 'Assessments' },
   { href: '/about-us', label: 'About' },
 ] as const;
+
+const isLinkActive = (pathname: string, href: string) =>
+  href === '/' ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 
 const Header = () => {
   const pathname = usePathname();
@@ -32,7 +36,7 @@ const Header = () => {
 
         <nav className='hidden items-center gap-1 md:flex'>
           {NAV_LINKS.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive = isLinkActive(pathname, link.href);
             return (
               <Link
                 key={link.href}
@@ -78,7 +82,7 @@ const Header = () => {
         <div className='border-t border-border/60 px-4 py-4 sm:px-6 md:hidden'>
           <nav className='flex flex-col gap-1'>
             {NAV_LINKS.map((link) => {
-              const isActive = pathname === link.href;
+              const isActive = isLinkActive(pathname, link.href);
               return (
                 <Link
                   key={link.href}

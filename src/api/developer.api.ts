@@ -1,4 +1,5 @@
 import apiClient from '@/lib/apiClient';
+import { compact } from '@/lib/utils';
 import type { ApiResponse } from '@/types/api.types';
 import type { DeveloperDashboard } from '@/types/developer-dashboard.types';
 import type {
@@ -48,10 +49,6 @@ export const getAssessmentAttempts = (assessmentId: string) => {
     query: { sortBy: 'createdAt', sortOrder: 'desc', limit: 100 },
   });
 };
-
-// The API rejects empty strings (e.g. `search=`), so drop empty params up front.
-const compact = (query: object) =>
-  Object.fromEntries(Object.entries(query).filter(([, v]) => v !== undefined && v !== ''));
 
 export const getDeveloperPurchaseList = (query: DeveloperPurchasesQuery) => {
   return apiClient<ApiResponse<DeveloperPurchase[]>>('/purchases', { query: compact(query) });

@@ -4,7 +4,7 @@ const FOOTER_LINKS = [
   {
     heading: 'Product',
     links: [
-      { label: 'Browse assessments', href: '/' },
+      { label: 'Browse assessments', href: '/assessments' },
       { label: 'For evaluators', href: '/' },
       { label: 'Pricing', href: '/' },
     ],
