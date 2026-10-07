@@ -1,10 +1,16 @@
+'use client';
+
 import { Star } from 'lucide-react';
 import DeleteReviewDialog from '@/components/modules/developer-reviews/delete-review-dialog';
 import ReviewFormDialog from '@/components/modules/developer-reviews/review-form-dialog';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useGetAssessmentReviews } from '@/hooks';
 import { cn } from '@/lib/utils';
-import type { AssessmentReview } from '@/types/developer-assessments.types';
+import type { CatalogReviewRow } from '@/types/assessment.types';
+import type { DeveloperReview } from '@/types/developer-assessments.types';
 
 export const Stars = ({ rating, className }: { rating: number; className?: string }) => (
   <span className='flex items-center gap-0.5' role='img' aria-label={`${rating.toFixed(1)} out of 5`}>
@@ -22,26 +28,34 @@ export const Stars = ({ rating, className }: { rating: number; className?: strin
 );
 
 // Reviewer emails come back from the API; never show them publicly.
-const reviewerName = (r: AssessmentReview) => r.developer.name ?? 'Anonymous';
+const reviewerName = (r: { developer: { name: string | null } }) => r.developer.name ?? 'Anonymous';
 
 type PanelProps = {
-  reviews: AssessmentReview[];
   assessmentId: string;
   assessmentTitle: string;
-  myId?: string;
+  // From the developer's own review list; the catalog's embedded reviews still include deleted ones.
+  myReview?: DeveloperReview | null;
   canReview?: boolean;
 };
 
-const AssessmentReviewsPanel = ({ reviews: all, assessmentId, assessmentTitle, myId, canReview }: PanelProps) => {
+const AssessmentReviewsPanel = ({ assessmentId, assessmentTitle, myReview, canReview }: PanelProps) => {
+  const { data, isPending, isError, refetch } = useGetAssessmentReviews(assessmentId, {
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+    limit: 100,
+  });
+  const all = data?.pages.flatMap((page) => page.data) ?? [];
+  const total = data?.pages[0]?.meta?.total ?? all.length;
+  const isMine = (r: CatalogReviewRow) => r.id === myReview?.id;
   // Pin the viewer's own review to the top.
-  const reviews = [...all].sort((a, b) => Number(b.developer.id === myId) - Number(a.developer.id === myId));
+  const reviews = [...all].sort((a, b) => Number(isMine(b)) - Number(isMine(a)));
   const average = reviews.length ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0;
   const counts = [5, 4, 3, 2, 1].map((star) => ({ star, count: reviews.filter((r) => r.rating === star).length }));
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Reviews ({reviews.length})</CardTitle>
+        <CardTitle>Reviews{data ? ` (${total})` : ''}</CardTitle>
       </CardHeader>
       <CardContent className='flex flex-col gap-6'>
         {canReview && (
@@ -50,7 +64,16 @@ const AssessmentReviewsPanel = ({ reviews: all, assessmentId, assessmentTitle, m
             <ReviewFormDialog mode='create' assessmentId={assessmentId} assessmentTitle={assessmentTitle} />
           </div>
         )}
-        {reviews.length === 0 ? (
+        {isPending ? (
+          <Skeleton className='h-40 rounded-lg' />
+        ) : isError ? (
+          <div className='flex flex-col items-center gap-3 py-6 text-center'>
+            <p className='text-sm text-muted-foreground'>We couldn&apos;t load reviews for this assessment.</p>
+            <Button variant='outline' onClick={() => refetch()}>
+              Retry
+            </Button>
+          </div>
+        ) : reviews.length === 0 ? (
           <p className='py-4 text-center text-sm text-muted-foreground'>
             No reviews yet. Finish an attempt to be the first to leave one.
           </p>
@@ -76,7 +99,7 @@ const AssessmentReviewsPanel = ({ reviews: all, assessmentId, assessmentTitle, m
             </div>
             <ul className='divide-y divide-border/60 border-t border-border/60'>
               {reviews.map((r) => {
-                const mine = Boolean(myId) && r.developer.id === myId;
+                const mine = isMine(r);
                 return (
                   <li
                     key={r.id}
@@ -92,7 +115,7 @@ const AssessmentReviewsPanel = ({ reviews: all, assessmentId, assessmentTitle, m
                       </span>
                       <Stars rating={r.rating} />
                     </div>
-                    {r.comment && <p className='text-sm text-muted-foreground'>{r.comment}</p>}
+                    {r.comment && <p className='text-sm break-words text-muted-foreground'>{r.comment}</p>}
                     {mine && (
                       <div className='flex items-center gap-1 pt-1'>
                         <ReviewFormDialog

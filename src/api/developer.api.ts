@@ -3,10 +3,15 @@ import { compact } from '@/lib/utils';
 import type { ApiResponse } from '@/types/api.types';
 import type { DeveloperDashboard } from '@/types/developer-dashboard.types';
 import type {
+  AssessmentAttempt,
   AssessmentAttempts,
+  AssessmentAttemptsQuery,
+  AttemptDetail,
+  EvaluateAttemptPayload,
+  EvaluateAttemptResult,
+  StartedAttempt,
   CreatePaymentResult,
   DeveloperPurchasesQuery,
-  DeveloperAssessmentDetail,
   DeveloperPurchase,
   DeveloperPayment,
   DeveloperPaymentDetail,
@@ -24,14 +29,15 @@ export const getDeveloperDashboard = () => {
 
 const PURCHASES_PAGE_SIZE = 100;
 
-// There is no "owned assessments" endpoint: page through every paid order and let the caller flatten it.
-export const getPaidPurchases = async () => {
+// There is no "owned assessments" endpoint: page through every order and let the caller derive
+// what is owned (paid) and what is waiting on payment (unpaid orders, to avoid paying twice).
+export const getAllPurchases = async () => {
   const rows: DeveloperPurchase[] = [];
   let page = 1;
   let totalPages = 1;
   do {
     const res = await apiClient<ApiResponse<DeveloperPurchase[]>>('/purchases', {
-      query: { paymentStatus: 'SUCCESS', page, limit: PURCHASES_PAGE_SIZE },
+      query: { page, limit: PURCHASES_PAGE_SIZE },
     });
     rows.push(...res.data);
     totalPages = res.meta?.totalPages ?? 1;
@@ -40,13 +46,33 @@ export const getPaidPurchases = async () => {
   return rows;
 };
 
-export const getDeveloperAssessment = (assessmentId: string) => {
-  return apiClient<ApiResponse<DeveloperAssessmentDetail>>(`/assessments/${assessmentId}`);
+export const getAssessmentAttempts = (assessmentId: string, query: AssessmentAttemptsQuery) => {
+  return apiClient<ApiResponse<AssessmentAttempts>>(`/developer/assessments/${assessmentId}/attempts`, {
+    query: compact(query),
+  });
 };
 
-export const getAssessmentAttempts = (assessmentId: string) => {
-  return apiClient<ApiResponse<AssessmentAttempts>>(`/developer/assessments/${assessmentId}/attempts`, {
-    query: { sortBy: 'createdAt', sortOrder: 'desc', limit: 100 },
+// A GET that creates an attempt and starts its timer: only ever call it from a click handler.
+export const startAttempt = (assessmentId: string) => {
+  return apiClient<ApiResponse<StartedAttempt>>(`/developer/assessments/${assessmentId}/start`);
+};
+
+export const getAttempt = ({ assessmentId, attemptId }: { assessmentId: string; attemptId: string }) => {
+  return apiClient<ApiResponse<AttemptDetail>>(`/developer/assessments/${assessmentId}/attempts/${attemptId}`);
+};
+
+// Only records `submittedAt`; answers go to `evaluateAttempt`.
+export const submitAttempt = ({ assessmentId, attemptId }: { assessmentId: string; attemptId: string }) => {
+  return apiClient<ApiResponse<AssessmentAttempt>>(`/developer/assessments/${assessmentId}/submit`, {
+    method: 'PATCH',
+    body: { attemptId },
+  });
+};
+
+export const evaluateAttempt = ({ assessmentId, ...body }: EvaluateAttemptPayload) => {
+  return apiClient<ApiResponse<EvaluateAttemptResult>>(`/developer/assessments/${assessmentId}/evaluate`, {
+    method: 'PATCH',
+    body,
   });
 };
 

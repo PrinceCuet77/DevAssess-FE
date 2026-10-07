@@ -57,7 +57,7 @@ const OwnedAssessmentCard = ({ assessment }: { assessment: OwnedAssessment }) =>
             render={<Link href={`/developer/assessments/detail/take?id=${assessment.id}`} />}
           >
             <Play />
-            Start assessment
+            Take assessment
           </Button>
           <Button
             variant='outline'

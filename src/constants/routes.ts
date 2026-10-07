@@ -9,6 +9,7 @@ import {
   PlusCircle,
   ReceiptText,
   ShoppingBag,
+  ShoppingCart,
   Star,
   UserRound,
   Users,
@@ -34,6 +35,7 @@ export const ROLE_NAV_ITEMS: Record<Role, INavItem[]> = {
   DEVELOPER: [
     { title: 'Dashboard', href: '/developer', icon: LayoutDashboard },
     { title: 'My assessments', href: '/developer/my-assessments', icon: BookOpenCheck },
+    { title: 'Cart', href: '/developer/cart', icon: ShoppingCart },
     { title: 'Purchases', href: '/developer/purchases', icon: ShoppingBag },
     { title: 'Payments', href: '/developer/payments', icon: CreditCard },
     { title: 'Reviews', href: '/developer/reviews', icon: Star },

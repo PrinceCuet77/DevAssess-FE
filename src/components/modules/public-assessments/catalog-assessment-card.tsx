@@ -3,6 +3,7 @@ import { ArrowRight, CalendarDays, Clock, Target } from 'lucide-react';
 import { formatMoney } from '@/components/modules/admin-purchases/purchase-utils';
 import { Stars } from '@/components/modules/developer-assessments/assessment-reviews-panel';
 import AssessmentCover from '@/components/modules/public-assessments/assessment-cover';
+import OwnershipBadge from '@/components/modules/public-assessments/ownership-badge';
 import {
   averageRating,
   creatorName,
@@ -41,6 +42,7 @@ const CatalogAssessmentCard = ({ assessment, activeTags = [], onTagClick }: IPro
           src={assessment.thumbnailUrl}
           className='aspect-[16/9]'
         />
+        <OwnershipBadge assessmentId={assessment.id} className='absolute top-3 left-3' />
         <span className='absolute top-3 right-3 rounded-full bg-background/90 px-2.5 py-1 text-xs font-semibold tabular-nums shadow-sm backdrop-blur'>
           {formatMoney(assessment.price)}
         </span>

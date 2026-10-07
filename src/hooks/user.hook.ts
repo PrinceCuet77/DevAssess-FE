@@ -9,6 +9,7 @@ import {
   uploadAvatarToS3,
 } from '@/api/user.api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { clearUserStorage } from '@/lib/storage';
 
 const PROFILE_KEY = ['my-profile'];
 
@@ -60,6 +61,9 @@ export function useDeleteAccount() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteMyAccount,
-    onSuccess: () => queryClient.clear(),
+    onSuccess: () => {
+      clearUserStorage();
+      queryClient.clear();
+    },
   });
 }

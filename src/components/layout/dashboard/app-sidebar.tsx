@@ -11,16 +11,19 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar';
 import { ROLE_NAV_ITEMS, USER_NAV_ITEMS, type INavItem } from '@/constants/routes';
-import { useGetMyProfile } from '@/hooks';
+import { useCart, useGetMyProfile } from '@/hooks';
 
 export default function AppSidebar() {
   const pathname = usePathname();
   const { data: user } = useGetMyProfile();
+  const cart = useCart();
+  const badges: Record<string, number> = { '/developer/cart': cart.count };
   const roleItems = user ? ROLE_NAV_ITEMS[user.role] : [];
   const dashboardHref = roleItems[0]?.href;
 
@@ -41,6 +44,7 @@ export default function AppSidebar() {
           <Icon />
           <span>{title}</span>
         </SidebarMenuButton>
+        {Boolean(badges[href]) && <SidebarMenuBadge className='tabular-nums'>{badges[href]}</SidebarMenuBadge>}
       </SidebarMenuItem>
     ));
 

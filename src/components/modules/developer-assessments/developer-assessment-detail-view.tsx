@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, useSearchParams } from 'next/navigation';
 import { FetchError } from 'ofetch';
 import {
   ArrowLeft,
+  Ban,
   CalendarCheck,
   Clock,
   History,
@@ -13,6 +14,7 @@ import {
   Play,
   RotateCcw,
   ShoppingBag,
+  ShoppingCart,
   Star,
   Target,
   Trophy,
@@ -20,22 +22,26 @@ import {
 } from 'lucide-react';
 import AssessmentAttemptsTable from '@/components/modules/developer-assessments/assessment-attempts-table';
 import AssessmentReviewsPanel, { Stars } from '@/components/modules/developer-assessments/assessment-reviews-panel';
+import { examHref, findResumable, formatClock, msLeft, takeHref } from '@/components/modules/developer-attempt/attempt-utils';
+import PayOrderButton from '@/components/modules/developer-purchases/pay-order-button';
 import ReviewFormDialog from '@/components/modules/developer-reviews/review-form-dialog';
+import { formatDuration } from '@/components/modules/public-assessments/catalog-utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useGetAssessmentAttempts, useGetDeveloperAssessment, useGetMyProfile, useGetOwnedAssessments } from '@/hooks';
+import {
+  useGetAssessmentAttempts,
+  useGetAssessmentReviews,
+  useGetMyAssessmentReview,
+  useGetOwnedAssessments,
+  useGetPendingOrders,
+} from '@/hooks';
+import { useNow } from '@/hooks/use-now';
 import { cn } from '@/lib/utils';
 
-type Tab = 'overview' | 'attempts' | 'reviews';
-
-const formatDuration = (minutes: number) => {
-  if (minutes < 60) return `${minutes} min`;
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return m ? `${h}h ${m}m` : `${h}h`;
-};
+const TABS = ['overview', 'attempts', 'reviews'] as const;
+type Tab = (typeof TABS)[number];
 
 const formatDate = (iso: string) => new Date(iso).toLocaleDateString(undefined, { dateStyle: 'medium' });
 
@@ -72,25 +78,32 @@ const BackLink = () => (
 );
 
 const DeveloperAssessmentDetailView = ({ assessmentId }: { assessmentId: string }) => {
-  const [tab, setTab] = useState<Tab>('overview');
-  const assessmentQuery = useGetDeveloperAssessment(assessmentId);
+  const tabParam = useSearchParams().get('tab');
+  const [tab, setTab] = useState<Tab>(TABS.find((t) => t === tabParam) ?? 'overview');
+  const now = useNow();
+  // The attempts endpoint returns the assessment in any status, so this page keeps working after
+  // the evaluator unpublishes it (the catalog endpoint would 404).
+  const summary = useGetAssessmentAttempts(assessmentId, { limit: 100 });
   const owned = useGetOwnedAssessments();
-  const attemptsQuery = useGetAssessmentAttempts(assessmentId);
-  const profile = useGetMyProfile();
+  const pending = useGetPendingOrders();
+  const assessment = summary.data?.data.assessment;
+  const available = assessment?.status === 'PUBLISHED';
+  const reviews = useGetAssessmentReviews(assessmentId, { sortBy: 'createdAt', sortOrder: 'desc', limit: 100 });
+  const attempts = summary.data?.data.attempts ?? [];
+  const evaluated = attempts.filter((a) => a.status === 'EVALUATED');
+  const myReview = useGetMyAssessmentReview(evaluated.length > 0 ? assessment : undefined);
 
-  const { data: assessment, error, isPending, refetch } = assessmentQuery;
-
-  if (isPending) return <DetailSkeleton />;
+  if (summary.isPending || owned.isPending) return <DetailSkeleton />;
 
   if (!assessment) {
-    // 404 covers unpublished/nonexistent assessments; 400 a malformed id.
-    if (error instanceof FetchError && (error.status === 404 || error.status === 400)) notFound();
+    // 404 = no such assessment; 400 = malformed id.
+    if (summary.error instanceof FetchError && (summary.error.status === 404 || summary.error.status === 400)) notFound();
     return (
       <div className='flex flex-col gap-4'>
         <BackLink />
         <Card className='items-center gap-3 px-4 py-12 text-center'>
           <p className='text-sm text-muted-foreground'>We couldn&apos;t load this assessment. Please try again.</p>
-          <Button variant='outline' onClick={() => refetch()}>
+          <Button variant='outline' onClick={() => summary.refetch()}>
             Retry
           </Button>
         </Card>
@@ -99,27 +112,73 @@ const DeveloperAssessmentDetailView = ({ assessmentId }: { assessmentId: string 
   }
 
   const purchase = owned.data?.find((a) => a.id === assessment.id);
-  const ownershipKnown = !owned.isPending && !owned.isError;
   const isOwned = Boolean(purchase);
-  const attempts = attemptsQuery.data ?? [];
-  const evaluated = attempts.filter((a) => a.status === 'EVALUATED');
-  const bestScore = evaluated.reduce<number | null>((best, a) => Math.max(best ?? 0, a.score ?? 0), null);
+  // Drafts and archived assessments are only visible to developers who bought them earlier.
+  if (!available && !isOwned && !owned.isError) notFound();
+
+  const pendingOrder = pending.data?.[assessment.id];
+  const totalAttempts = summary.data?.meta?.total ?? attempts.length;
+  const bestScore = evaluated.length ? Math.max(...evaluated.map((a) => a.score ?? 0)) : null;
   const hasPassed = evaluated.some((a) => a.isPassed);
+  const resumable = findResumable(attempts, now);
   const creator = assessment.creator.name ?? assessment.creator.email.split('@')[0];
-  const average = assessment.reviews.length
-    ? assessment.reviews.reduce((sum, r) => sum + r.rating, 0) / assessment.reviews.length
-    : null;
-  const hasAttempted = attempts.length > 0;
+  const reviewRows = reviews.data?.pages.flatMap((p) => p.data) ?? [];
+  const reviewTotal = reviews.data?.pages[0]?.meta?.total ?? reviewRows.length;
+  const average = reviewRows.length ? reviewRows.reduce((sum, r) => sum + r.rating, 0) / reviewRows.length : null;
   // Reviews need an EVALUATED attempt, and only one active review is allowed per assessment.
-  const myId = profile.data?.id;
-  const hasReviewed = Boolean(myId) && assessment.reviews.some((r) => r.developer.id === myId);
-  const canReview = evaluated.length > 0 && Boolean(myId) && !hasReviewed;
+  const canReview = evaluated.length > 0 && myReview.isSuccess && !myReview.data;
 
   const tabs: { id: Tab; label: string; icon: LucideIcon }[] = [
     { id: 'overview', label: 'Overview', icon: Info },
-    { id: 'attempts', label: `Attempts${attemptsQuery.data ? ` (${attempts.length})` : ''}`, icon: History },
-    { id: 'reviews', label: `Reviews (${assessment.reviews.length})`, icon: Star },
+    { id: 'attempts', label: `Attempts (${totalAttempts})`, icon: History },
+    ...(available ? [{ id: 'reviews' as const, label: `Reviews${reviews.data ? ` (${reviewTotal})` : ''}`, icon: Star }] : []),
   ];
+
+  let primaryAction: React.ReactNode;
+  if (!isOwned) {
+    primaryAction = pendingOrder ? (
+      <div className='flex flex-col gap-2'>
+        <p role='status' className='rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-sm'>
+          You have an unpaid order for this assessment. Complete the payment to unlock it.
+        </p>
+        <PayOrderButton purchaseId={pendingOrder.purchaseId} label='Complete payment' />
+      </div>
+    ) : (
+      <div className='flex flex-col gap-2'>
+        <p role='status' className='rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-sm'>
+          You haven&apos;t purchased this assessment yet, so it can&apos;t be started.
+        </p>
+        <Button size='lg' nativeButton={false} render={<Link href={`/assessments/detail?id=${assessment.id}`} />}>
+          <ShoppingCart /> Buy this assessment
+        </Button>
+      </div>
+    );
+  } else if (!available) {
+    primaryAction = (
+      <p role='status' className='flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm'>
+        <Ban className='mt-0.5 size-4 shrink-0 text-destructive' aria-hidden />
+        The evaluator has withdrawn this assessment. New attempts can&apos;t be started, but your history stays available.
+      </p>
+    );
+  } else if (resumable) {
+    primaryAction = (
+      <div className='flex flex-col gap-2'>
+        <Button size='lg' nativeButton={false} render={<Link href={examHref(assessment.id, resumable.id)} />}>
+          <Play /> Resume · {formatClock(msLeft(resumable, now))} left
+        </Button>
+        <Button variant='outline' nativeButton={false} render={<Link href={takeHref(assessment.id)} />}>
+          <RotateCcw /> Start a new attempt
+        </Button>
+      </div>
+    );
+  } else {
+    primaryAction = (
+      <Button size='lg' nativeButton={false} render={<Link href={takeHref(assessment.id)} />}>
+        {totalAttempts > 0 ? <RotateCcw /> : <Play />}
+        {totalAttempts > 0 ? 'Retake assessment' : 'Start assessment'}
+      </Button>
+    );
+  }
 
   return (
     <div className='flex flex-col gap-6'>
@@ -136,6 +195,7 @@ const DeveloperAssessmentDetailView = ({ assessmentId }: { assessmentId: string 
           <div className='flex flex-wrap items-center gap-2'>
             <h2 className='font-heading text-2xl font-semibold tracking-tight break-words'>{assessment.title}</h2>
             {isOwned && <Badge variant='success'>Purchased</Badge>}
+            {!available && <Badge variant='destructive'>No longer available</Badge>}
             {hasPassed && (
               <Badge variant='default'>
                 <Trophy className='size-3' /> Passed
@@ -148,7 +208,7 @@ const DeveloperAssessmentDetailView = ({ assessmentId }: { assessmentId: string 
               <span className='flex items-center gap-1.5'>
                 <Stars rating={average} className='size-3.5' />
                 <span className='tabular-nums'>
-                  {average.toFixed(1)} ({assessment.reviews.length})
+                  {average.toFixed(1)} ({reviewTotal})
                 </span>
               </span>
             )}
@@ -195,7 +255,7 @@ const DeveloperAssessmentDetailView = ({ assessmentId }: { assessmentId: string 
                   <CardTitle>About this assessment</CardTitle>
                 </CardHeader>
                 <CardContent className='flex flex-col gap-4'>
-                  <p className='text-sm leading-relaxed whitespace-pre-line'>{assessment.description}</p>
+                  <p className='text-sm leading-relaxed break-words whitespace-pre-line'>{assessment.description}</p>
                   <ul className='flex list-disc flex-col gap-1.5 pl-5 text-sm text-muted-foreground'>
                     <li>You have {formatDuration(assessment.duration)} once you start. The timer cannot be paused.</li>
                     <li>Answer every question before finishing; you need {assessment.passingPercentage}% to pass.</li>
@@ -204,25 +264,12 @@ const DeveloperAssessmentDetailView = ({ assessmentId }: { assessmentId: string 
                 </CardContent>
               </Card>
             )}
-            {tab === 'attempts' &&
-              (attemptsQuery.isPending ? (
-                <Skeleton className='h-48 rounded-xl' />
-              ) : attemptsQuery.isError ? (
-                <Card className='items-center gap-3 px-4 py-10 text-center'>
-                  <p className='text-sm text-muted-foreground'>We couldn&apos;t load your attempts.</p>
-                  <Button variant='outline' onClick={() => attemptsQuery.refetch()}>
-                    Retry
-                  </Button>
-                </Card>
-              ) : (
-                <AssessmentAttemptsTable attempts={attempts} />
-              ))}
-            {tab === 'reviews' && (
+            {tab === 'attempts' && <AssessmentAttemptsTable assessmentId={assessment.id} bestScore={bestScore} />}
+            {tab === 'reviews' && available && (
               <AssessmentReviewsPanel
-                reviews={assessment.reviews}
                 assessmentId={assessment.id}
                 assessmentTitle={assessment.title}
-                myId={myId}
+                myReview={myReview.data}
                 canReview={canReview}
               />
             )}
@@ -232,39 +279,42 @@ const DeveloperAssessmentDetailView = ({ assessmentId }: { assessmentId: string 
         <aside className='flex flex-col gap-4 lg:sticky lg:top-20'>
           <Card>
             <CardHeader>
-              <CardTitle>{hasAttempted ? 'Your progress' : 'Ready when you are'}</CardTitle>
+              <CardTitle>{resumable ? 'Attempt in progress' : totalAttempts > 0 ? 'Your progress' : 'Ready when you are'}</CardTitle>
             </CardHeader>
             <CardContent className='flex flex-col gap-5'>
-              {hasAttempted && (
+              {totalAttempts > 0 && (
                 <div className='grid grid-cols-2 gap-3'>
                   <div className='rounded-lg bg-muted/50 p-3'>
                     <p className='text-xs text-muted-foreground'>Attempts</p>
-                    <p className='font-heading text-xl font-semibold tabular-nums'>{attempts.length}</p>
+                    <p className='font-heading text-xl font-semibold tabular-nums'>{totalAttempts}</p>
                   </div>
                   <div className='rounded-lg bg-muted/50 p-3'>
                     <p className='text-xs text-muted-foreground'>Best score</p>
-                    <p className='font-heading text-xl font-semibold tabular-nums'>{bestScore ?? '-'}</p>
+                    <p className='font-heading text-xl font-semibold tabular-nums'>
+                      {bestScore ?? '-'}
+                      {bestScore !== null && <span className='ml-1 text-xs font-normal text-muted-foreground'>marks</span>}
+                    </p>
                   </div>
                 </div>
               )}
 
-              {ownershipKnown && !isOwned ? (
-                <div role='status' className='rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-sm'>
-                  You haven&apos;t purchased this assessment yet, so it can&apos;t be started.
-                </div>
-              ) : (
-                <Button
-                  size='lg'
-                  disabled={!isOwned}
-                  nativeButton={false}
-                  render={<Link href={`/developer/assessments/detail/take?id=${assessment.id}`} />}
-                >
-                  {hasAttempted ? <RotateCcw /> : <Play />}
-                  {hasAttempted ? 'Retake assessment' : 'Start assessment'}
-                </Button>
-              )}
+              {primaryAction}
 
               {canReview && <ReviewFormDialog mode='create' assessmentId={assessment.id} assessmentTitle={assessment.title} />}
+              {myReview.data && (
+                <div className='flex items-center justify-between gap-2 rounded-lg bg-muted/50 px-3 py-2'>
+                  <span className='flex items-center gap-2 text-sm'>
+                    Your rating <Stars rating={myReview.data.rating} className='size-3.5' />
+                  </span>
+                  <ReviewFormDialog
+                    mode='edit'
+                    reviewId={myReview.data.id}
+                    assessmentTitle={assessment.title}
+                    rating={myReview.data.rating}
+                    comment={myReview.data.comment}
+                  />
+                </div>
+              )}
 
               <dl className='flex flex-col gap-4 border-t border-border/60 pt-5'>
                 <Fact icon={Clock} label='Time limit' value={formatDuration(assessment.duration)} />

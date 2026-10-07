@@ -24,6 +24,15 @@ import { useCreateReview, useUpdateReview } from '@/hooks';
 import { getApiErrorMessage, parseFieldErrors } from '@/lib/errors';
 import { cn } from '@/lib/utils';
 
+// The live database keeps a deleted review's (developer, assessment) pair unique, so re-reviewing
+// after a delete fails with a generic duplicate-key error; say what actually happened.
+const reviewErrorMessage = (err: unknown, isEdit: boolean) => {
+  const message = getApiErrorMessage(err, isEdit ? 'Could not update the review.' : 'Could not post the review.');
+  return /duplicate key/i.test(message)
+    ? 'You reviewed this assessment before and deleted it, so a new review can’t be posted.'
+    : message;
+};
+
 type Props =
   | { mode: 'create'; assessmentId: string; assessmentTitle: string }
   | { mode: 'edit'; reviewId: string; assessmentTitle: string; rating: number; comment: string | null };
@@ -68,7 +77,7 @@ const ReviewFormDialog = (props: Props) => {
       onError: (err: unknown) => {
         const fields = parseFieldErrors(err);
         if (fields.rating || fields.comment) setErrors({ rating: fields.rating, comment: fields.comment });
-        else toast.error(getApiErrorMessage(err, isEdit ? 'Could not update the review.' : 'Could not post the review.'));
+        else toast.error(reviewErrorMessage(err, isEdit));
       },
     };
 

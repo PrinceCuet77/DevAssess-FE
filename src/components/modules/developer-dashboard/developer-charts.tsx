@@ -18,7 +18,11 @@ const DeveloperCharts = ({ stats, attempts }: IProps) => {
     <div className='grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]'>
       <DonutChartCard
         title='Attempt outcomes'
-        description={`Pass rate ${stats.passRate.toFixed(1)}% across evaluated attempts.`}
+        description={
+          stats.totalEvaluatedAttempts
+            ? `Pass rate ${stats.passRate.toFixed(1)}% across evaluated attempts.`
+            : 'No evaluated attempts yet.'
+        }
         totalLabel='attempts'
         slices={[
           { key: 'passed', label: 'Passed', value: stats.passedAttemptsCount },

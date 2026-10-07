@@ -30,6 +30,15 @@ export type DeveloperPurchase = {
   payments: DeveloperPurchasePayment[];
 };
 
+// An unpaid order (no SUCCESS payment yet) that still holds this assessment.
+export type PendingOrder = {
+  purchaseId: string;
+  price: string;
+  createdAt: string;
+  // `UNPAID` when no payment was ever started, otherwise the latest attempt's status.
+  status: PaymentStatus | 'UNPAID';
+};
+
 // An assessment the developer owns, flattened out of a paid order.
 export type OwnedAssessment = DeveloperPurchaseAssessment & {
   purchaseId: string;
@@ -45,15 +54,22 @@ export type OwnedAssessmentsQuery = {
   limit?: number;
 };
 
-export type AssessmentReview = {
+export type AssessmentAttempt = {
   id: string;
-  rating: number;
-  comment: string | null;
-  developer: { id: string; name: string | null; email: string };
+  score: number | null;
+  isPassed: boolean | null;
+  status: AttemptStatus;
+  startedAt: string;
+  endedAt: string | null;
+  submittedAt: string | null;
+  evaluatedAt: string | null;
+  createdAt: string;
 };
 
-// `GET /assessments/:id` — questions and the answer key are never included.
-export type DeveloperAssessmentDetail = {
+export type AttemptAssessmentStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED' | 'DELETED';
+
+// The assessment as the attempt endpoints return it: any status, so it still resolves after unpublishing.
+export type AttemptAssessment = {
   id: string;
   title: string;
   description: string;
@@ -62,27 +78,75 @@ export type DeveloperAssessmentDetail = {
   duration: number;
   price: string;
   passingPercentage: number;
+  status: AttemptAssessmentStatus;
   publishedAt: string | null;
-  createdAt: string;
   creator: { id: string; name: string | null; email: string };
-  reviews: AssessmentReview[];
-};
-
-export type AssessmentAttempt = {
-  id: string;
-  score: number | null;
-  isPassed: boolean | null;
-  status: AttemptStatus;
-  startedAt: string;
-  endedAt: string;
-  submittedAt: string | null;
-  evaluatedAt: string | null;
-  createdAt: string;
 };
 
 export type AssessmentAttempts = {
-  assessment: { id: string; title: string };
+  assessment: AttemptAssessment;
   attempts: AssessmentAttempt[];
+};
+
+export type AssessmentAttemptsQuery = {
+  status?: AttemptStatus;
+  sortBy?: 'createdAt' | 'score';
+  sortOrder?: 'asc' | 'desc';
+  page?: number;
+  limit?: number;
+};
+
+// Single-choice: the answer sent back is the option `id`. The answer key is never sent to developers.
+export type AttemptQuestion = {
+  id: string;
+  question: string;
+  marks: number;
+  options: { id: string; text: string }[];
+};
+
+// `GET /developer/assessments/:id/start` creates the attempt and returns its questions.
+export type StartedAttempt = AssessmentAttempt & { questions: AttemptQuestion[] };
+
+// `GET /developer/assessments/:id/attempts/:attemptId`, used to (re)open the exam screen.
+export type AttemptDetail = {
+  assessment: AttemptAssessment;
+  attempt: AssessmentAttempt;
+  questions: AttemptQuestion[];
+};
+
+export type SelectedAnswer = { questionId: string; answer: string };
+
+export type EvaluateAttemptPayload = {
+  assessmentId: string;
+  attemptId: string;
+  answers: SelectedAnswer[];
+};
+
+export type QuestionResult = {
+  questionId: string;
+  question: string;
+  marks: number;
+  selectedAnswer: string | null;
+  isCorrect: boolean;
+  obtainedMarks: number;
+};
+
+export type AttemptEvaluation = {
+  attemptId: string;
+  totalMarks: number;
+  obtainedMarks: number;
+  percentage: number;
+  passingPercentage: number;
+  isPassed: boolean;
+  status: AttemptStatus;
+  evaluatedAt: string;
+  questionResults: QuestionResult[];
+};
+
+export type EvaluateAttemptResult = {
+  assessment: AttemptAssessment;
+  evaluation: AttemptEvaluation;
+  attemptHistory: AssessmentAttempt[];
 };
 
 export type DeveloperPurchasesQuery = {

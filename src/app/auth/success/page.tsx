@@ -7,6 +7,7 @@ import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { getMyProfile } from '@/api/user.api';
 import { ROLE_DASHBOARD_PATH } from '@/constants/routes';
+import { resolveRedirect, takeOAuthRedirect } from '@/lib/redirect';
 
 // The API redirects here after setting the auth cookies; the URL carries no data.
 const AuthSuccessPage = () => {
@@ -21,7 +22,8 @@ const AuthSuccessPage = () => {
         if (cancelled) return;
         queryClient.setQueryData(['my-profile'], response);
         toast.success('Login successful!');
-        router.replace(ROLE_DASHBOARD_PATH[response.data.role]);
+        const { role } = response.data;
+        router.replace(resolveRedirect(takeOAuthRedirect(), role) ?? ROLE_DASHBOARD_PATH[role]);
       })
       .catch(() => {
         if (cancelled) return;

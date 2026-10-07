@@ -38,7 +38,8 @@ const UserNav = () => {
       onSuccess: () => {
         toast.success('Logged out successfully!');
         router.push('/login');
-        queryClient.removeQueries({ queryKey: ['my-profile'] });
+        // Drop every cached query, not just the profile, so the next account never sees this one's data.
+        queryClient.removeQueries();
       },
       onError: () => {
         toast.error('Logout failed. Please try again.');

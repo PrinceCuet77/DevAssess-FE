@@ -40,7 +40,8 @@ const DeleteReviewDialog = ({ reviewId, assessmentTitle }: { reviewId: string; a
           <DialogHeader>
             <DialogTitle>Delete this review?</DialogTitle>
             <DialogDescription className='break-words'>
-              Your review of &ldquo;{assessmentTitle}&rdquo; will be removed. You can post a new one afterwards.
+              Your review of &ldquo;{assessmentTitle}&rdquo; will be removed. You may not be able to post a new review for
+              this assessment afterwards, so consider editing it instead.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

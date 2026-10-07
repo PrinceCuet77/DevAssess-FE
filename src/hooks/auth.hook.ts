@@ -13,6 +13,8 @@ import { type Role } from '@/types/user.types';
 import { useRouter } from 'next/navigation';
 import { getMyProfile } from '@/api/user.api';
 import { ROLE_DASHBOARD_PATH } from '@/constants/routes';
+import { clearUserStorage } from '@/lib/storage';
+import { readRedirectParam, resolveRedirect } from '@/lib/redirect';
 
 
 export const useLogin = () => {
@@ -51,9 +53,11 @@ export const useResetPassword = () => {
   });
 };
 
+// Cart, exam drafts and cached results belong to the user who is leaving.
 export const useLogout = () => {
   return useMutation({
     mutationFn: userLogout,
+    onSuccess: clearUserStorage,
   });
 };
 
@@ -69,7 +73,8 @@ export const useTestLogin = () => {
   });
 };
 
-// After a successful login the cookies are set; load the profile and land on the role's dashboard.
+// After a successful login the cookies are set; load the profile and go back to where the user was
+// sent from (`?redirect=`), or to the role's dashboard.
 export const usePostLoginRedirect = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -77,6 +82,7 @@ export const usePostLoginRedirect = () => {
   return async () => {
     const response = await getMyProfile();
     queryClient.setQueryData(['my-profile'], response);
-    router.replace(ROLE_DASHBOARD_PATH[response.data.role]);
+    const { role } = response.data;
+    router.replace(resolveRedirect(readRedirectParam(), role) ?? ROLE_DASHBOARD_PATH[role]);
   };
 };
