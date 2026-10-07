@@ -4,7 +4,7 @@ import AssessmentCatalogView from '@/components/modules/public-assessments/asses
 import CatalogSkeleton from '@/components/modules/public-assessments/catalog-skeleton';
 
 export const metadata: Metadata = {
-  title: 'Browse assessments - DevAssess',
+  title: 'Browse assessments | DevAssess',
   description: 'Find timed technical assessments built by expert evaluators and prove your skills.',
 };
 

@@ -11,7 +11,7 @@ import TestimonialsSection from '@/components/modules/homepage/testimonials-sect
 import TopicsSection from '@/components/modules/homepage/topics-section';
 
 export const metadata: Metadata = {
-  title: 'DevAssess - Expert-built technical assessments',
+  title: 'DevAssess | Expert-built technical assessments',
   description:
     'Buy timed technical assessments built by expert evaluators, prove your skills, and track your progress.',
 };

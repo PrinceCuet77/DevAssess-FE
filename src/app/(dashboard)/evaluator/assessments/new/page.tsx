@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import CreateAssessmentView from '@/components/modules/evaluator-assessment-form/create-assessment-view';
 
 export const metadata: Metadata = {
-  title: 'New assessment - DevAssess',
+  title: 'New assessment | DevAssess',
 };
 
 const EvaluatorAssessmentsNewPage = () => {

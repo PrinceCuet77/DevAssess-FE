@@ -6,7 +6,7 @@ import DeveloperReviewsView from '@/components/modules/developer-reviews/develop
 import ReviewsSkeleton from '@/components/modules/developer-reviews/reviews-skeleton';
 
 export const metadata: Metadata = {
-  title: 'My reviews - DevAssess',
+  title: 'My reviews | DevAssess',
 };
 
 const DeveloperReviewsPage = () => (

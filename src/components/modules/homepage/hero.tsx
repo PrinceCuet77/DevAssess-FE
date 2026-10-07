@@ -16,7 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import type { CatalogAssessment } from '@/types/assessment.types';
 
-const ROTATING_SKILLS = ['React', 'Node.js', 'TypeScript', 'SQL', 'system design'];
+const ROTATING_SKILLS = ['React', 'Node.js', 'TypeScript', 'SQL', 'Coding'];
 const SLIDE_MS = 5000;
 
 const prefersReducedMotion = () =>

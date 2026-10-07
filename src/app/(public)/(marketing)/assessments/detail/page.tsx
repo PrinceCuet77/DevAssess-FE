@@ -4,7 +4,7 @@ import PublicAssessmentDetailView from '@/components/modules/public-assessments/
 
 // The view swaps in the assessment's own title once it loads.
 export const metadata: Metadata = {
-  title: 'Assessment - DevAssess',
+  title: 'Assessment | DevAssess',
 };
 
 const AssessmentDetailPage = () => (

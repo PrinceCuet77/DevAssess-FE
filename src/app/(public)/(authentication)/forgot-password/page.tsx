@@ -3,7 +3,7 @@ import AuthBrandPanel from '@/components/modules/auth/brand-panel';
 import ForgotPasswordForm from '@/components/form/forgot-password-form';
 
 export const metadata: Metadata = {
-  title: 'Forgot password - DevAssess',
+  title: 'Forgot password | DevAssess',
   description: 'Reset the password for your DevAssess account.',
 };
 

@@ -4,7 +4,7 @@ import type { DeveloperDashboardStats } from '@/types/developer-dashboard.types'
 
 // With nothing evaluated yet, 0% would read as "failed everything".
 const rate = (value: number, stats: DeveloperDashboardStats) =>
-  stats.totalEvaluatedAttempts === 0 ? '—' : `${value.toFixed(1)}%`;
+  stats.totalEvaluatedAttempts === 0 ? '-' : `${value.toFixed(1)}%`;
 
 const StatsGrid = ({ stats }: { stats: DeveloperDashboardStats }) => (
   <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6'>

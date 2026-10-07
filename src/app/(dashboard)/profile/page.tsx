@@ -4,7 +4,7 @@ import PageHeader from '@/components/layout/dashboard/page-header';
 import ProfileView from '@/components/modules/profile/profile-view';
 
 export const metadata: Metadata = {
-  title: 'Update profile - DevAssess',
+  title: 'Update profile | DevAssess',
 };
 
 const Page = () => {

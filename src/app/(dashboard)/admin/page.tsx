@@ -4,7 +4,7 @@ import PageHeader from '@/components/layout/dashboard/page-header';
 import AdminDashboardView from '@/components/modules/admin-dashboard/admin-dashboard-view';
 
 export const metadata: Metadata = {
-  title: 'Admin dashboard - DevAssess',
+  title: 'Admin dashboard | DevAssess',
 };
 
 const AdminDashboardPage = () => {

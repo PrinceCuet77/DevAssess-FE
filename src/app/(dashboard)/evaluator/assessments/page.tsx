@@ -8,7 +8,7 @@ import EvaluatorAssessmentsView, {
 import { AssessmentsTableSkeleton } from '@/components/modules/evaluator-assessments/assessments-table';
 
 export const metadata: Metadata = {
-  title: 'My assessments - DevAssess',
+  title: 'My assessments | DevAssess',
 };
 
 const EvaluatorAssessmentsPage = () => {

@@ -4,7 +4,7 @@ import PageHeader from '@/components/layout/dashboard/page-header';
 import CartView from '@/components/modules/developer-checkout/cart-view';
 
 export const metadata: Metadata = {
-  title: 'Cart - DevAssess',
+  title: 'Cart | DevAssess',
 };
 
 const DeveloperCartPage = () => (

@@ -4,7 +4,7 @@ import AuthBrandPanel from '@/components/modules/auth/brand-panel';
 import VerifyAccountContent from '@/components/form/verify-account-content';
 
 export const metadata: Metadata = {
-  title: 'Verify your account - DevAssess',
+  title: 'Verify your account | DevAssess',
   description:
     'Enter the one-time code we emailed you to verify your DevAssess account.',
 };

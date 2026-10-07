@@ -6,7 +6,7 @@ import AdminUsersView from '@/components/modules/admin-users/admin-users-view';
 import { UsersTableSkeleton } from '@/components/modules/admin-users/users-table';
 
 export const metadata: Metadata = {
-  title: 'Users - DevAssess',
+  title: 'Users | DevAssess',
 };
 
 const AdminUsersPage = () => {

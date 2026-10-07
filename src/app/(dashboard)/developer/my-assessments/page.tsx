@@ -6,7 +6,7 @@ import OwnedAssessmentsSkeleton from '@/components/modules/developer-assessments
 import OwnedAssessmentsView from '@/components/modules/developer-assessments/owned-assessments-view';
 
 export const metadata: Metadata = {
-  title: 'My assessments - DevAssess',
+  title: 'My assessments | DevAssess',
 };
 
 const DeveloperMyAssessmentsPage = () => {

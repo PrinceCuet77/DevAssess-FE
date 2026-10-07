@@ -4,7 +4,7 @@ import PageHeader from '@/components/layout/dashboard/page-header';
 import AdminAnalyticsView from '@/components/modules/admin-dashboard/admin-analytics-view';
 
 export const metadata: Metadata = {
-  title: 'Analytics - DevAssess',
+  title: 'Analytics | DevAssess',
 };
 
 const AdminAnalyticsPage = () => (

@@ -2,7 +2,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { ApiResponseMeta } from '@/types/api.types';
 
-// 1 … 4 5 [6] 7 8 … 20 — always keeps first/last and two neighbours of the current page.
+// 1 … 4 5 [6] 7 8 … 20 - always keeps first/last and two neighbours of the current page.
 const pageItems = (page: number, totalPages: number): (number | 'gap')[] => {
   const pages = new Set([1, totalPages, page - 2, page - 1, page, page + 1, page + 2]);
   const sorted = [...pages].filter((p) => p >= 1 && p <= totalPages).sort((a, b) => a - b);

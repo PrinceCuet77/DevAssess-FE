@@ -7,7 +7,7 @@ import { buttonVariants } from '@/components/ui/button';
 import { FAQ_GROUPS } from '@/constants/faq';
 
 export const metadata: Metadata = {
-  title: 'Help center - DevAssess',
+  title: 'Help center | DevAssess',
   description: 'Answers about buying, taking and publishing assessments on DevAssess.',
 };
 

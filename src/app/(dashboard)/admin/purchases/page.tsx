@@ -6,7 +6,7 @@ import AdminPurchasesView from '@/components/modules/admin-purchases/admin-purch
 import { DataTableSkeleton } from '@/components/ui/data-table';
 
 export const metadata: Metadata = {
-  title: 'Purchases - DevAssess',
+  title: 'Purchases | DevAssess',
 };
 
 const AdminPurchasesPage = () => {

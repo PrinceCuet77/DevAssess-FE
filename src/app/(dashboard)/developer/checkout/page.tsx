@@ -4,7 +4,7 @@ import PageContainer from '@/components/layout/dashboard/page-container';
 import CheckoutView from '@/components/modules/developer-checkout/checkout-view';
 
 export const metadata: Metadata = {
-  title: 'Checkout - DevAssess',
+  title: 'Checkout | DevAssess',
 };
 
 const DeveloperCheckoutPage = () => (

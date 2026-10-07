@@ -6,7 +6,7 @@ import DeveloperPurchasesView from '@/components/modules/developer-purchases/dev
 import PurchasesSkeleton from '@/components/modules/developer-purchases/purchases-skeleton';
 
 export const metadata: Metadata = {
-  title: 'Purchases - DevAssess',
+  title: 'Purchases | DevAssess',
 };
 
 const DeveloperPurchasesPage = () => {

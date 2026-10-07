@@ -5,7 +5,7 @@ import ChangePasswordForm from '@/components/form/change-password-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export const metadata: Metadata = {
-  title: 'Change password - DevAssess',
+  title: 'Change password | DevAssess',
 };
 
 const Page = () => {

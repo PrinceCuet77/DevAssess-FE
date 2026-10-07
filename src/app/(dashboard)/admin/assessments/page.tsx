@@ -6,7 +6,7 @@ import AdminAssessmentsView from '@/components/modules/admin-assessments/admin-a
 import { AssessmentsTableSkeleton } from '@/components/modules/admin-assessments/assessments-table';
 
 export const metadata: Metadata = {
-  title: 'Assessments - DevAssess',
+  title: 'Assessments | DevAssess',
 };
 
 const AdminAssessmentsPage = () => {

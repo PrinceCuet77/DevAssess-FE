@@ -4,7 +4,7 @@ import PageHeader from '@/components/layout/dashboard/page-header';
 import EvaluatorDashboardView from '@/components/modules/evaluator-dashboard/evaluator-dashboard-view';
 
 export const metadata: Metadata = {
-  title: 'Evaluator dashboard - DevAssess',
+  title: 'Evaluator dashboard | DevAssess',
 };
 
 const EvaluatorDashboardPage = () => {

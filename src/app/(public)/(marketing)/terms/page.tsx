@@ -4,7 +4,7 @@ import LegalPage, { type LegalSection } from '@/components/layout/public/legal-p
 import { SITE } from '@/constants/site';
 
 export const metadata: Metadata = {
-  title: 'Terms of service - DevAssess',
+  title: 'Terms of service | DevAssess',
   description: 'The rules for using the DevAssess marketplace as a developer or evaluator.',
 };
 

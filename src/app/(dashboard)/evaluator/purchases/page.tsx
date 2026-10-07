@@ -6,7 +6,7 @@ import EvaluatorPurchasesView from '@/components/modules/evaluator-purchases/eva
 import { DataTableSkeleton } from '@/components/ui/data-table';
 
 export const metadata: Metadata = {
-  title: 'Sales - DevAssess',
+  title: 'Sales | DevAssess',
 };
 
 const EvaluatorPurchasesPage = () => {

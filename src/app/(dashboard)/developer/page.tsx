@@ -4,7 +4,7 @@ import PageHeader from '@/components/layout/dashboard/page-header';
 import DeveloperDashboardView from '@/components/modules/developer-dashboard/developer-dashboard-view';
 
 export const metadata: Metadata = {
-  title: 'Developer dashboard - DevAssess',
+  title: 'Developer dashboard | DevAssess',
 };
 
 const DeveloperDashboardPage = () => {

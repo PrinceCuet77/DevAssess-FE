@@ -213,7 +213,7 @@ export type DeveloperReviewsQuery = {
   limit?: number;
 };
 
-// `GET /reviews` — the developer's own reviews, each with the assessment it belongs to.
+// `GET /reviews` - the developer's own reviews, each with the assessment it belongs to.
 export type DeveloperReview = {
   id: string;
   rating: number;

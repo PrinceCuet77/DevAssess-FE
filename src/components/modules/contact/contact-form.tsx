@@ -30,7 +30,7 @@ const ContactForm = () => {
       setIsSending(true);
       const topic = CONTACT_TOPICS.find((t) => t.value === value.topic)?.label ?? 'General question';
       const subject = `[${topic}] Message from ${value.name.trim()}`;
-      const body = `${value.message.trim()}\n\n—\n${value.name.trim()}\n${value.email.trim()}`;
+      const body = `${value.message.trim()}\n\n-\n${value.name.trim()}\n${value.email.trim()}`;
       try {
         window.location.href = `mailto:${SITE.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         setSent({ name: value.name.trim(), email: value.email.trim() });

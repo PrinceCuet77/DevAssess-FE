@@ -155,7 +155,7 @@ const PublicAssessmentDetailView = () => {
 
   return (
     <div className='flex flex-col pb-24 lg:pb-0'>
-      <title>{`${assessment.title} - DevAssess`}</title>
+      <title>{`${assessment.title} | DevAssess`}</title>
 
       <section className='relative isolate overflow-hidden border-b border-border/60'>
         <div aria-hidden className='absolute inset-0 -z-10 bg-gradient-to-br from-primary/10 via-background to-background' />
@@ -198,7 +198,7 @@ const PublicAssessmentDetailView = () => {
                 </a>
               ) : (
                 <span className='rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary'>
-                  New — no reviews yet
+                  New - no reviews yet
                 </span>
               )}
               <span className='flex items-center gap-2'>

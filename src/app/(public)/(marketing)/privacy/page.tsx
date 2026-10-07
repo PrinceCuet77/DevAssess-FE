@@ -4,7 +4,7 @@ import LegalPage, { type LegalSection } from '@/components/layout/public/legal-p
 import { SITE } from '@/constants/site';
 
 export const metadata: Metadata = {
-  title: 'Privacy policy - DevAssess',
+  title: 'Privacy policy | DevAssess',
   description: 'How DevAssess collects, uses and protects your personal data.',
 };
 

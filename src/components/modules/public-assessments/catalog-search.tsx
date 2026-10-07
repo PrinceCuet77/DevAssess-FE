@@ -41,7 +41,7 @@ const CatalogSearch = ({ value, onChange }: IProps) => {
         type='search'
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder='Search by title, topic or tag — e.g. React, SQL, system design'
+        placeholder='Search by title, topic or tag - e.g. React, SQL, system design'
         aria-label='Search assessments'
         className='h-12 rounded-xl bg-background pr-11 pl-11 text-base shadow-sm md:text-base dark:bg-background/60 [&::-webkit-search-cancel-button]:hidden'
       />

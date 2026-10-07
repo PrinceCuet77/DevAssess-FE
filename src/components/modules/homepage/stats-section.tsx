@@ -18,7 +18,7 @@ const StatsSection = () => {
         { icon: MessageSquareText, value: insights.reviewCount.toLocaleString(), label: 'Developer reviews' },
         {
           icon: Star,
-          value: insights.averageRating !== null ? `${insights.averageRating.toFixed(1)} / 5` : '—',
+          value: insights.averageRating !== null ? `${insights.averageRating.toFixed(1)} / 5` : '-',
           label: 'Average rating',
         },
       ]
