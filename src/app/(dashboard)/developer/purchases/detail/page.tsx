@@ -2,19 +2,17 @@
 
 import { Suspense } from 'react';
 import { notFound, useSearchParams } from 'next/navigation';
-import PlaceholderPage from '@/components/shared/placeholder-page';
+import PageContainer from '@/components/layout/dashboard/page-container';
+import PurchaseDetailView from '@/components/modules/developer-purchases/purchase-detail-view';
 
 const Content = () => {
   const id = useSearchParams().get('id');
   if (!id) notFound();
 
   return (
-    <PlaceholderPage
-      title='Purchase details'
-      description='Line items and payment status for this purchase.'
-      api='GET /purchases/:id'
-      resourceId={id}
-    />
+    <PageContainer>
+      <PurchaseDetailView purchaseId={id} />
+    </PageContainer>
   );
 };
 

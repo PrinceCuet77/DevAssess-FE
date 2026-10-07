@@ -1,18 +1,18 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
-import PlaceholderPage from '@/components/shared/placeholder-page';
+import PageContainer from '@/components/layout/dashboard/page-container';
+import CheckoutView from '@/components/modules/developer-checkout/checkout-view';
 
 export const metadata: Metadata = {
   title: 'Checkout - DevAssess',
 };
 
-const DeveloperCheckoutPage = () => {
-  return (
-    <PlaceholderPage
-      title='Checkout'
-      description='Review your cart and pay for your assessments.'
-      api='POST /purchases, POST /payments/create'
-    />
-  );
-};
+const DeveloperCheckoutPage = () => (
+  <PageContainer>
+    <Suspense>
+      <CheckoutView />
+    </Suspense>
+  </PageContainer>
+);
 
 export default DeveloperCheckoutPage;

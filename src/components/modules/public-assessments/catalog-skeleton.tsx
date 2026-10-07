@@ -1,7 +1,7 @@
 import { Skeleton } from '@/components/ui/skeleton';
 
 export const CatalogGridSkeleton = ({ count = 6 }: { count?: number }) => (
-  <div className='grid gap-5 sm:grid-cols-2 xl:grid-cols-3' aria-busy aria-label='Loading assessments'>
+  <div className='grid gap-5 sm:grid-cols-2 lg:grid-cols-3' aria-busy aria-label='Loading assessments'>
     {Array.from({ length: count }, (_, i) => (
       <div key={i} className='overflow-hidden rounded-xl ring-1 ring-foreground/10'>
         <Skeleton className='aspect-[16/9] rounded-none' />
@@ -17,6 +17,10 @@ export const CatalogGridSkeleton = ({ count = 6 }: { count?: number }) => (
             <Skeleton className='h-3 w-3/4' />
           </div>
           <Skeleton className='mt-2 h-4 w-full' />
+          <div className='flex items-center justify-between'>
+            <Skeleton className='h-3 w-24' />
+            <Skeleton className='h-7 w-28 rounded-lg' />
+          </div>
         </div>
       </div>
     ))}

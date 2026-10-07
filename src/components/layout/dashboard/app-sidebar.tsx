@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Logo from '@/components/shared/logo';
 import { usePathname } from 'next/navigation';
 import {
   Sidebar,
@@ -46,9 +47,7 @@ export default function AppSidebar() {
   return (
     <Sidebar collapsible='icon'>
       <SidebarHeader>
-        <Link href='/' className='px-2 py-1 font-heading text-lg font-semibold tracking-tight'>
-          DevAssess
-        </Link>
+        <Logo className='px-1 py-1 group-data-[collapsible=icon]:px-0' />
       </SidebarHeader>
 
       <SidebarContent>

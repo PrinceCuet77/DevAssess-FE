@@ -34,8 +34,8 @@ const HINT: Partial<Record<OrderStatus, string>> = {
   REFUNDED: 'This order was refunded.',
 };
 
-const PurchaseCard = ({ order }: { order: DeveloperPurchase }) => {
-  const [open, setOpen] = useState(false);
+const PurchaseCard = ({ order, defaultOpen = false }: { order: DeveloperPurchase; defaultOpen?: boolean }) => {
+  const [open, setOpen] = useState(defaultOpen);
   const status = deriveOrderStatus(order.payments);
   const paid = order.payments.find((p) => p.status === 'SUCCESS');
   const payLabel = PAY_LABEL[status];
@@ -45,7 +45,12 @@ const PurchaseCard = ({ order }: { order: DeveloperPurchase }) => {
     <Card className='gap-0 overflow-hidden py-0'>
       <div className='flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b bg-muted/30 px-4 py-3'>
         <div className='flex flex-col'>
-          <span className='font-mono text-xs font-medium'>Order #{shortId(order.id)}</span>
+          <Link
+            href={`/developer/purchases/detail?id=${order.id}`}
+            className='w-fit rounded font-mono text-xs font-medium outline-none hover:text-primary hover:underline focus-visible:ring-3 focus-visible:ring-ring/50'
+          >
+            Order #{shortId(order.id)}
+          </Link>
           <span className='text-xs text-muted-foreground'>
             Placed {formatDateTime(order.createdAt)}
           </span>

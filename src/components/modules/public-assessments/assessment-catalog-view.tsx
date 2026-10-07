@@ -146,7 +146,7 @@ const AssessmentCatalogView = () => {
       <>
         <ul
           className={cn(
-            'grid gap-5 sm:grid-cols-2 xl:grid-cols-3',
+            'grid gap-5 sm:grid-cols-2 lg:grid-cols-3',
             isFetching && 'opacity-60 transition-opacity',
           )}
           aria-busy={isFetching}
@@ -187,8 +187,8 @@ const AssessmentCatalogView = () => {
         </div>
       </section>
 
-      <div className='mx-auto grid w-full max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[16rem_1fr] lg:px-8 lg:py-10'>
-        <aside className='hidden lg:block' aria-label='Filters'>
+      <div className='mx-auto grid w-full max-w-7xl gap-8 px-4 py-8 sm:px-6 xl:grid-cols-[15rem_1fr] lg:px-8 lg:py-10'>
+        <aside className='hidden xl:block' aria-label='Filters'>
           <div className='sticky top-24 flex flex-col gap-5'>
             <div className='flex items-center justify-between'>
               <h2 className='font-heading text-base font-semibold'>Filters</h2>
@@ -227,7 +227,7 @@ const AssessmentCatalogView = () => {
             </p>
             <div className='flex items-center gap-2'>
               <Sheet>
-                <SheetTrigger render={<Button variant='outline' className='lg:hidden' />}>
+                <SheetTrigger render={<Button variant='outline' className='xl:hidden' />}>
                   <SlidersHorizontal />
                   Filters
                   {filterCount > 0 && (

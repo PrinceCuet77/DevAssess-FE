@@ -54,6 +54,14 @@ export const getDeveloperPurchaseList = (query: DeveloperPurchasesQuery) => {
   return apiClient<ApiResponse<DeveloperPurchase[]>>('/purchases', { query: compact(query) });
 };
 
+// Creates an unpaid order; payment is a separate step (`createPayment`).
+export const createPurchase = (assessmentIds: string[]) => {
+  return apiClient<ApiResponse<DeveloperPurchase>>('/purchases', {
+    method: 'POST',
+    body: { assessmentIds },
+  });
+};
+
 export const createPayment = (purchaseId: string) => {
   return apiClient<ApiResponse<CreatePaymentResult>>('/payments/create', {
     method: 'POST',

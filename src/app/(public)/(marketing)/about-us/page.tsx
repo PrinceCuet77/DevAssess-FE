@@ -1,7 +1,11 @@
-import React from 'react';
+import type { Metadata } from 'next';
+import AboutView from '@/components/modules/about/about-view';
 
-const AboutUsPage = () => {
-  return <div>AboutUsPage</div>;
+export const metadata: Metadata = {
+  title: 'About us - DevAssess',
+  description: 'Why we built DevAssess and how the marketplace works for developers, evaluators and admins.',
 };
+
+const AboutUsPage = () => <AboutView />;
 
 export default AboutUsPage;

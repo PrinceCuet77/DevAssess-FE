@@ -9,7 +9,11 @@ function FieldError({ errors }: { errors: unknown[] }) {
     .join(', ');
 
   if (!message) return null;
-  return <p className='text-xs text-destructive'>{message}</p>;
+  return (
+    <p role='alert' className='text-xs text-destructive'>
+      {message}
+    </p>
+  );
 }
 
 export default FieldError;

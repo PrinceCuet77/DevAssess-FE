@@ -1,4 +1,5 @@
 import {
+  BarChart3,
   BookOpenCheck,
   ClipboardList,
   CreditCard,
@@ -48,10 +49,11 @@ export const ROLE_NAV_ITEMS: Record<Role, INavItem[]> = {
     { title: 'Users', href: '/admin/users', icon: Users },
     { title: 'Assessments', href: '/admin/assessments', icon: ClipboardList },
     { title: 'Purchases', href: '/admin/purchases', icon: PackageCheck },
+    { title: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
   ],
 };
 
 export const USER_NAV_ITEMS: INavItem[] = [
-  { title: 'Update profile', href: '/profile', icon: UserRound },
+  { title: 'Profile', href: '/profile', icon: UserRound },
   { title: 'Change password', href: '/change-password', icon: KeyRound },
 ];

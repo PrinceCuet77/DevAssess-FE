@@ -1,5 +1,6 @@
 'use client';
 
+import DeveloperCharts from '@/components/modules/developer-dashboard/developer-charts';
 import DashboardSkeleton from '@/components/modules/developer-dashboard/dashboard-skeleton';
 import PendingBanner from '@/components/modules/developer-dashboard/pending-banner';
 import RecentAttempts from '@/components/modules/developer-dashboard/recent-attempts';
@@ -29,6 +30,7 @@ const DeveloperDashboardView = () => {
     <div className='flex flex-col gap-6'>
       <PendingBanner count={stats.pendingAssessmentsToAttempt} />
       <StatsGrid stats={stats} />
+      <DeveloperCharts stats={stats} attempts={recentAttempts} />
       <div className='grid gap-6 lg:grid-cols-2'>
         <RecentAttempts attempts={recentAttempts} />
         <RecentPurchases purchases={recentPurchases} />

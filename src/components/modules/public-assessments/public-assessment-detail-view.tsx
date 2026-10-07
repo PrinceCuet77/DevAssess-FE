@@ -8,7 +8,11 @@ import {
   ChevronRight,
   Clock,
   CreditCard,
+  ListChecks,
+  MessageSquareText,
   PlayCircle,
+  Tag,
+  UserRound,
   RotateCcw,
   Target,
   Trophy,
@@ -26,6 +30,7 @@ import {
 } from '@/components/modules/public-assessments/catalog-utils';
 import PublicReviewsSection from '@/components/modules/public-assessments/public-reviews-section';
 import PurchaseAction from '@/components/modules/public-assessments/purchase-action';
+import RelatedAssessments from '@/components/modules/public-assessments/related-assessments';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGetAssessment } from '@/hooks';
@@ -64,6 +69,18 @@ const Includes = ({ icon: Icon, label, value }: { icon: LucideIcon; label: strin
     <div className='flex min-w-0 flex-1 items-center justify-between gap-2'>
       <dt className='text-sm text-muted-foreground'>{label}</dt>
       <dd className='truncate text-sm font-medium tabular-nums'>{value}</dd>
+    </div>
+  </div>
+);
+
+const Spec = ({ icon: Icon, label, children }: { icon: LucideIcon; label: string; children: React.ReactNode }) => (
+  <div className='flex items-start gap-3 rounded-xl bg-card p-4 ring-1 ring-foreground/10'>
+    <span className='flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+      <Icon className='size-4' aria-hidden />
+    </span>
+    <div className='flex min-w-0 flex-col gap-0.5'>
+      <dt className='text-xs text-muted-foreground'>{label}</dt>
+      <dd className='text-sm font-medium break-words'>{children}</dd>
     </div>
   </div>
 );
@@ -226,6 +243,43 @@ const PublicAssessmentDetailView = () => {
             </p>
           </section>
 
+          <section aria-labelledby='specs-heading' className='flex flex-col gap-4'>
+            <h2 id='specs-heading' className='font-heading text-xl font-semibold tracking-tight'>
+              Key information
+            </h2>
+            <dl className='grid gap-3 sm:grid-cols-2 xl:grid-cols-3'>
+              <Spec icon={Clock} label='Time limit'>
+                {formatDuration(assessment.duration)}
+              </Spec>
+              <Spec icon={Target} label='Pass mark'>
+                {assessment.passingPercentage}% correct answers
+              </Spec>
+              <Spec icon={CreditCard} label='Price'>
+                {formatMoney(assessment.price)} · one-time
+              </Spec>
+              <Spec icon={ListChecks} label='Format'>
+                Multiple choice, auto-graded
+              </Spec>
+              <Spec icon={RotateCcw} label='Retakes'>
+                Allowed, all attempts kept
+              </Spec>
+              <Spec icon={UserRound} label='Evaluator'>
+                {creator}
+              </Spec>
+              <Spec icon={CalendarDays} label='Published'>
+                {formatDate(assessment.publishedAt ?? assessment.createdAt)}
+              </Spec>
+              <Spec icon={MessageSquareText} label='Rating'>
+                {average !== null
+                  ? `${average.toFixed(1)} / 5 from ${reviewCount} ${reviewCount === 1 ? 'review' : 'reviews'}`
+                  : 'No reviews yet'}
+              </Spec>
+              <Spec icon={Tag} label='Topics'>
+                {assessment.tags.length ? assessment.tags.join(', ') : 'General'}
+              </Spec>
+            </dl>
+          </section>
+
           <section aria-labelledby='how-heading' className='flex flex-col gap-4'>
             <h2 id='how-heading' className='font-heading text-xl font-semibold tracking-tight'>
               How it works
@@ -272,6 +326,10 @@ const PublicAssessmentDetailView = () => {
             </div>
           </div>
         </aside>
+      </Container>
+
+      <Container className='border-t border-border/60 py-12'>
+        <RelatedAssessments assessment={assessment} />
       </Container>
 
       {/* Mobile: keep the price and primary action within thumb reach while reading. */}

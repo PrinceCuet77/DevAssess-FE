@@ -2,6 +2,7 @@ import {
   getAssessmentAttempts,
   getDeveloperAssessment,
   createPayment,
+  createPurchase,
   getDeveloperDashboard,
   getDeveloperPurchaseList,
   getPaidPurchases,
@@ -84,6 +85,17 @@ export const useGetDeveloperPurchaseList = (query: DeveloperPurchasesQuery) => {
     queryFn: () => getDeveloperPurchaseList(query),
     placeholderData: keepPreviousData,
     retry: false,
+  });
+};
+
+export const useCreatePurchase = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createPurchase,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['developer-purchase-list'] });
+      queryClient.invalidateQueries({ queryKey: ['developer-dashboard'] });
+    },
   });
 };
 
