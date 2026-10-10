@@ -30,7 +30,7 @@ const OwnedAssessmentsEmptyState = ({ filtered, onClear }: IProps) => {
           Clear filters
         </Button>
       ) : (
-        <Button nativeButton={false} render={<Link href='/' />}>
+        <Button nativeButton={false} render={<Link href='/assessments' />}>
           Browse assessments
         </Button>
       )}

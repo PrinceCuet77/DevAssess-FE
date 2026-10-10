@@ -16,7 +16,9 @@ const PurchasesEmptyState = ({ filtered, onClear }: IProps) => {
         <Icon className='size-6' />
       </div>
       <div className='flex flex-col gap-1'>
-        <h3 className='text-base font-semibold'>{filtered ? 'No orders found' : 'No purchases yet'}</h3>
+        <h3 className='text-base font-semibold'>
+          {filtered ? 'No orders found' : 'No purchases yet'}
+        </h3>
         <p className='max-w-sm text-sm text-muted-foreground'>
           {filtered
             ? 'Nothing matches your filters. Try another status or a different keyword.'
@@ -28,7 +30,7 @@ const PurchasesEmptyState = ({ filtered, onClear }: IProps) => {
           Clear filters
         </Button>
       ) : (
-        <Button nativeButton={false} render={<Link href='/' />}>
+        <Button nativeButton={false} render={<Link href='/assessments' />}>
           Browse assessments
         </Button>
       )}
