@@ -1,0 +1,8 @@
+# Proxy the API through this site so auth cookies are first-party. Browsers that block
+# third-party cookies (Safari, Brave, Incognito, Chrome with the setting on) otherwise drop
+# the cookies set by the vercel.app backend, and /me and /auth/refresh-token return 401.
+[[redirects]]
+  from = "/api/*"
+  to = "https://dev-assess-iota.vercel.app/api/:splat"
+  status = 200
+  force = true
