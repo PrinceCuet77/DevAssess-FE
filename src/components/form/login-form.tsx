@@ -24,8 +24,8 @@ const LoginForm = () => {
 
   const form = useForm({
     defaultValues: {
-      email: 'admin@devassess.com',
-      password: 'Password@123',
+      email: '',
+      password: '',
     },
     validators: {
       onChange: loginUserSchema,
